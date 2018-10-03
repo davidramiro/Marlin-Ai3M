@@ -11503,9 +11503,11 @@ inline void gcode_M502() {
 #if HAS_TRINAMIC
   #if ENABLED(TMC_DEBUG)
     inline void gcode_M122() {
-      if (parser.seen('S'))
-        tmc_set_report_status(parser.value_bool());
-      else
+      #if ENABLED(MONITOR_DRIVER_STATUS)
+        if (parser.seen('S'))
+          tmc_set_report_status(parser.value_bool());
+        else
+      #endif
         tmc_report_all();
     }
   #endif // TMC_DEBUG
@@ -11516,7 +11518,7 @@ inline void gcode_M502() {
    * Report driver currents when no axis specified
    */
   inline void gcode_M906() {
-    #define TMC_SAY_CURRENT(Q) tmc_get_current(stepper##Q, TMC_##Q)
+    #define TMC_SAY_CURRENT(Q) tmc_get_current(stepper##Q)
     #define TMC_SET_CURRENT(Q) tmc_set_current(stepper##Q, value)
 
     bool report = true;
@@ -11661,43 +11663,44 @@ inline void gcode_M502() {
   #define M91x_USE(ST) (AXIS_DRIVER_TYPE(ST, TMC2130) || (AXIS_DRIVER_TYPE(ST, TMC2208) && PIN_EXISTS(ST##_SERIAL_RX)))
   #define M91x_USE_E(N) (E_STEPPERS > N && M91x_USE(E##N))
 
+#if ENABLED(MONITOR_DRIVER_STATUS)
   /**
    * M911: Report TMC stepper driver overtemperature pre-warn flag
    *       This flag is held by the library, persisting until cleared by M912
    */
   inline void gcode_M911() {
     #if M91x_USE(X)
-      tmc_report_otpw(stepperX, TMC_X);
+      tmc_report_otpw(stepperX);
     #endif
     #if M91x_USE(X2)
-      tmc_report_otpw(stepperX2, TMC_X2);
+      tmc_report_otpw(stepperX2);
     #endif
     #if M91x_USE(Y)
-      tmc_report_otpw(stepperY, TMC_Y);
+      tmc_report_otpw(stepperY);
     #endif
     #if M91x_USE(Y2)
-      tmc_report_otpw(stepperY2, TMC_Y2);
+      tmc_report_otpw(stepperY2);
     #endif
     #if M91x_USE(Z)
-      tmc_report_otpw(stepperZ, TMC_Z);
+      tmc_report_otpw(stepperZ);
     #endif
     #if M91x_USE(Z2)
-      tmc_report_otpw(stepperZ2, TMC_Z2);
+      tmc_report_otpw(stepperZ2);
     #endif
     #if M91x_USE_E(0)
-      tmc_report_otpw(stepperE0, TMC_E0);
+      tmc_report_otpw(stepperE0);
     #endif
     #if M91x_USE_E(1)
-      tmc_report_otpw(stepperE1, TMC_E1);
+      tmc_report_otpw(stepperE1);
     #endif
     #if M91x_USE_E(2)
-      tmc_report_otpw(stepperE2, TMC_E2);
+      tmc_report_otpw(stepperE2);
     #endif
     #if M91x_USE_E(3)
-      tmc_report_otpw(stepperE3, TMC_E3);
+      tmc_report_otpw(stepperE3);
     #endif
     #if M91x_USE_E(4)
-      tmc_report_otpw(stepperE4, TMC_E4);
+      tmc_report_otpw(stepperE4);
     #endif
   }
 
@@ -11723,30 +11726,30 @@ inline void gcode_M502() {
     #if M91x_USE(X) || M91x_USE(X2)
       const uint8_t xval = parser.byteval(axis_codes[X_AXIS], 10);
       #if M91x_USE(X)
-        if (hasNone || xval == 1 || (hasX && xval == 10)) tmc_clear_otpw(stepperX, TMC_X);
+        if (hasNone || xval == 1 || (hasX && xval == 10)) tmc_clear_otpw(stepperX);
       #endif
       #if M91x_USE(X2)
-        if (hasNone || xval == 2 || (hasX && xval == 10)) tmc_clear_otpw(stepperX2, TMC_X2);
+        if (hasNone || xval == 2 || (hasX && xval == 10)) tmc_clear_otpw(stepperX2);
       #endif
     #endif
 
     #if M91x_USE(Y) || M91x_USE(Y2)
       const uint8_t yval = parser.byteval(axis_codes[Y_AXIS], 10);
       #if M91x_USE(Y)
-        if (hasNone || yval == 1 || (hasY && yval == 10)) tmc_clear_otpw(stepperY, TMC_Y);
+        if (hasNone || yval == 1 || (hasY && yval == 10)) tmc_clear_otpw(stepperY);
       #endif
       #if M91x_USE(Y2)
-        if (hasNone || yval == 2 || (hasY && yval == 10)) tmc_clear_otpw(stepperY2, TMC_Y2);
+        if (hasNone || yval == 2 || (hasY && yval == 10)) tmc_clear_otpw(stepperY2);
       #endif
     #endif
 
     #if M91x_USE(Z) || M91x_USE(Z2)
       const uint8_t zval = parser.byteval(axis_codes[Z_AXIS], 10);
       #if M91x_USE(Z)
-        if (hasNone || zval == 1 || (hasZ && zval == 10)) tmc_clear_otpw(stepperZ, TMC_Z);
+        if (hasNone || zval == 1 || (hasZ && zval == 10)) tmc_clear_otpw(stepperZ);
       #endif
       #if M91x_USE(Z2)
-        if (hasNone || zval == 2 || (hasZ && zval == 10)) tmc_clear_otpw(stepperZ2, TMC_Z2);
+        if (hasNone || zval == 2 || (hasZ && zval == 10)) tmc_clear_otpw(stepperZ2);
       #endif
     #endif
 
@@ -11754,31 +11757,32 @@ inline void gcode_M502() {
     #if M91x_USE_E(0) || M91x_USE_E(1) || M91x_USE_E(2) || M91x_USE_E(3) || M91x_USE_E(4)
       const uint8_t eval = parser.byteval(axis_codes[E_AXIS], 10);
       #if M91x_USE_E(0)
-        if (hasNone || eval == 0 || (hasE && eval == 10)) tmc_clear_otpw(stepperE0, TMC_E0);
+        if (hasNone || eval == 0 || (hasE && eval == 10)) tmc_clear_otpw(stepperE0);
       #endif
       #if M91x_USE_E(1)
-        if (hasNone || eval == 1 || (hasE && eval == 10)) tmc_clear_otpw(stepperE1, TMC_E1);
+        if (hasNone || eval == 1 || (hasE && eval == 10)) tmc_clear_otpw(stepperE1);
       #endif
       #if M91x_USE_E(2)
-        if (hasNone || eval == 2 || (hasE && eval == 10)) tmc_clear_otpw(stepperE2, TMC_E2);
+        if (hasNone || eval == 2 || (hasE && eval == 10)) tmc_clear_otpw(stepperE2);
       #endif
       #if M91x_USE_E(3)
-        if (hasNone || eval == 3 || (hasE && eval == 10)) tmc_clear_otpw(stepperE3, TMC_E3);
+        if (hasNone || eval == 3 || (hasE && eval == 10)) tmc_clear_otpw(stepperE3);
       #endif
       #if M91x_USE_E(4)
-        if (hasNone || eval == 4 || (hasE && eval == 10)) tmc_clear_otpw(stepperE4, TMC_E4);
+        if (hasNone || eval == 4 || (hasE && eval == 10)) tmc_clear_otpw(stepperE4);
       #endif
     #endif
   }
+#endif
 
   /**
    * M913: Set HYBRID_THRESHOLD speed.
    */
   #if ENABLED(HYBRID_THRESHOLD)
     inline void gcode_M913() {
-      #define TMC_SAY_PWMTHRS(A,Q) tmc_get_pwmthrs(stepper##Q, TMC_##Q, planner.axis_steps_per_mm[_AXIS(A)])
+      #define TMC_SAY_PWMTHRS(A,Q) tmc_get_pwmthrs(stepper##Q, planner.axis_steps_per_mm[_AXIS(A)])
       #define TMC_SET_PWMTHRS(A,Q) tmc_set_pwmthrs(stepper##Q, value, planner.axis_steps_per_mm[_AXIS(A)])
-      #define TMC_SAY_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_get_pwmthrs(stepperE##E, TMC_E##E, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
+      #define TMC_SAY_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_get_pwmthrs(stepperE##E, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
       #define TMC_SET_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_set_pwmthrs(stepperE##E, value, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
 
       bool report = true;
@@ -11876,7 +11880,7 @@ inline void gcode_M502() {
    */
   #if ENABLED(SENSORLESS_HOMING)
     inline void gcode_M914() {
-      #define TMC_SAY_SGT(Q) tmc_get_sgt(stepper##Q, TMC_##Q)
+      #define TMC_SAY_SGT(Q) tmc_get_sgt(stepper##Q)
       #define TMC_SET_SGT(Q) tmc_set_sgt(stepper##Q, value)
 
       bool report = true;
@@ -11961,12 +11965,12 @@ inline void gcode_M502() {
       }
 
       #if AXIS_IS_TMC(Z)
-        const uint16_t Z_current_1 = stepperZ.getCurrent();
-        stepperZ.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+        const uint16_t Z_current_1 = stepperZ.getMilliamps();
+        stepperZ.rms_current(_rms);
       #endif
       #if AXIS_IS_TMC(Z2)
-        const uint16_t Z2_current_1 = stepperZ2.getCurrent();
-        stepperZ2.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+        const uint16_t Z2_current_1 = stepperZ2.getMilliamps();
+        stepperZ2.rms_current(_rms);
       #endif
 
       SERIAL_ECHOPAIR("\nCalibration current: Z", _rms);
@@ -11976,10 +11980,10 @@ inline void gcode_M502() {
       do_blocking_move_to_z(Z_MAX_POS+_z);
 
       #if AXIS_IS_TMC(Z)
-        stepperZ.setCurrent(Z_current_1, R_SENSE, HOLD_MULTIPLIER);
+        stepperZ.rms_current(Z_current_1);
       #endif
       #if AXIS_IS_TMC(Z2)
-        stepperZ2.setCurrent(Z2_current_1, R_SENSE, HOLD_MULTIPLIER);
+        stepperZ2.rms_current(Z2_current_1);
       #endif
 
       do_blocking_move_to_z(Z_MAX_POS);
@@ -13233,8 +13237,10 @@ void process_parsed_command() {
           case 122: gcode_M122(); break;                          // M122: Debug TMC steppers
         #endif
         case 906: gcode_M906(); break;                            // M906: Set motor current in milliamps using axis codes X, Y, Z, E
-        case 911: gcode_M911(); break;                            // M911: Report TMC prewarn triggered flags
-        case 912: gcode_M912(); break;                            // M911: Clear TMC prewarn triggered flags
+        #if ENABLED(MONITOR_DRIVER_STATUS)
+          case 911: gcode_M911(); break;                            // M911: Report TMC prewarn triggered flags
+          case 912: gcode_M912(); break;                            // M911: Clear TMC prewarn triggered flags
+        #endif
         #if ENABLED(HYBRID_THRESHOLD)
           case 913: gcode_M913(); break;                          // M913: Set HYBRID_THRESHOLD speed.
         #endif
@@ -15243,6 +15249,9 @@ void setup() {
 
   // Prepare communication for TMC drivers
   #if HAS_DRIVER(TMC2130)
+    #if DISABLED(TMC_USE_SW_SPI)
+      SPI.begin();
+    #endif
     tmc_init_cs_pins();
   #endif
   #if HAS_DRIVER(TMC2208)
