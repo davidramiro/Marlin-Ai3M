@@ -5,7 +5,7 @@ This is my slightly customized version of the [Marlin Firmware](https://github.c
 I am running this version on an i3 Mega Ultrabase V3 (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)) with FYSETC TMC2208 V1.2 installed.
 Basically, this should work on every Ultrabase version that has no bed leveling sensor and two Z-axis endstops.
 
-#### Why use this?
+### Why use this?
 
 While the i3 Mega is a great printer for it's price and produces fantastic results in stock, there are some issues that are easily addressed:
 
@@ -15,7 +15,9 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Fairly loud fans, while almost every one of them is easily replaced, the stock FW only gives out 9V instead of 12V on the parts cooling fan so some fans like Noctua don't run like they should. This is fixed in this firmware.
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
 
-#### How to flash this?
+### How to flash this?
+
+#### Compile it yourself:
 
 - Download Arduino IDE
 - Clone or download this repo
@@ -23,6 +25,15 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Open Marlin.ino in the Marlin directory of this repo
 - Customize if needed and under `Sketch`, select `Export compiled binary`
 - Look for the .hex file in your temporary directory, e.g. `.../AppData/Local/Temp/arduino_build_xxx/` (only the `Marlin.ino.hex`, not the `Marlin.ino.with_bootloader.hex`!)
+
+#### Or download precompiled hex:
+
+- Choose the correct hex file:
+- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-flipped.hex`
+- For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX.hex`
+
+#### After flashing: 
+
 - Flash the hex with Cura, OctoPrint or similar
 - Connect to the printer and send the following commands:
 - `G502` - load hard coded default values
@@ -77,7 +88,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 
 
 
-### About Marlin
+## About Marlin
 
 <img align="right" src="../../raw/1.1.x/buildroot/share/pixmaps/logo/marlin-250.png" />
 
