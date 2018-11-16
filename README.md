@@ -32,12 +32,12 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-flipped.hex`
 - For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX.hex`
 
-#### After flashing: 
+#### After obtaining the hex file: 
 
 - Flash the hex with Cura, OctoPrint or similar
 - Connect to the printer and send the following commands:
-- `G502` - load hard coded default values
-- `G500` - save them to EEPROM
+- `M502` - load hard coded default values
+- `M500` - save them to EEPROM
 
 #### PID tuning
 
