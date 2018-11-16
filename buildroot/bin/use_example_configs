@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+restore_configs
+
+cp Marlin/example_configurations/"$@"/Configuration* Marlin/
+
+if [ -f "Marlin/example_configurations/$@/_Bootscreen.h" ]; then
+  cp "Marlin/example_configurations/$@/_Bootscreen.h" Marlin/
+fi
