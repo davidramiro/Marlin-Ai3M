@@ -9,10 +9,49 @@ Basically, this should work on every Ultrabase version that has no bed leveling 
 
 While the i3 Mega is a great printer for it's price and produces fantastic results in stock, there are some issues that are easily addressed:
 
-- Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208.
--- To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
+- Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
+- Many people have issues getting the Ultrabase leveled perfectly, using Manual Mesh Bed Leveling the printer generates a mesh of the planeness of the bed and compensates for it on the Z-axis for perfect prints without having to level with the screws.
+- Much more efficient bed heating by using PID control. This uses less power and holds the temperature at a steady level. Highly recommended for printing ABS.
 - Fairly loud fans, while almost every one of them is easily replaced, the stock FW only gives out 9V instead of 12V on the parts cooling fan so some fans like Noctua don't run like they should. This is fixed in this firmware.
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
+
+#### How to flash this?
+
+- Download Arduino IDE
+- Clone or download this repo
+- In the IDE, under `Tools -> Board` select `Genuino Mega 2560` and `ATmega2560`
+- Open Marlin.ino in the Marlin directory of this repo
+- Customize if needed and under `Sketch`, select `Export compiled binary`
+- Look for the .hex file in your temporary directory, e.g. `.../AppData/Local/Temp/arduino_build_xxx/` (only the `Marlin.ino.hex`, not the `Marlin.ino.with_bootloader.hex`!)
+- Flash the hex with Cura, OctoPrint or similar
+- Connect to the printer and send the following commands:
+- `G502` - load hard coded default values
+- `G500` - save them to EEPROM
+
+#### PID tuning
+
+- Send `M303 E0 S200 C8 U1` to start extruder PID auto tuning
+- Check the output, after finishing it should report `Kp`, `Ki` and `Kd`values
+- Send `M301 Pxx.xx Ixx.xx Dxx.xx`, replacing the `xx.xx` with the values from the output in the order from above
+- Send `M303 E-1 S60 C8` to start heatbed PID auto tuning
+- Same as above, read the values and send them with `M304 Pxxx.xx Ixx.xx Dxxx.xx`
+- Save with `M500`
+
+#### Manual Mesh Bed Leveling
+
+- Level your preheated bed as well as you can
+- Send `G29 S1`, your nozzle will go to the first calibration position
+- Don't adjust the bed itself, only use software from here on:
+- Use the onscreen controls or a tool like OctoPrint to lower or raise your nozzle
+- If 0.1mm steps are not enough, you can send specific commands down to 0.02mm via those three commands:
+- To raise: `G91`, `G1 Z+0.02`, `G90`
+- To lower: `G91`, `G1 Z-0.02`, `G90`
+- When done, send `G29 S2` and repeat the process for the next command. Continue with `G29 S2`every time.
+- After finishing the 25 points, the printer will beep and calculate. After seeing `ok` on the console, enter `M500` to save the mesh to EEPROM
+- To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
+- Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
+- `G501`and `M420 S1`.
+- Enjoy never having to worry about an uneven bed again!
 
 ## Changes:
 
@@ -20,7 +59,11 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - TMC2208 configured in standalone mode
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
 - Some redundant code removed to save memory
+- Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
+- Heatbed PID mode enabled
+- Buffer & baudrate tweaks to improve print quality over USB
 - 12V capability on FAN0 (parts cooling fan) enabled
+
 
 ### Additional features by derhopp:
 
@@ -29,11 +72,13 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 
 
 ### Todo:
+
 - [ ] Tweak TMC2208 steps
 
 
 
 ### About Marlin
+
 <img align="right" src="../../raw/1.1.x/buildroot/share/pixmaps/logo/marlin-250.png" />
 
 Marlin is an optimized firmware for [RepRap 3D printers](http://reprap.org/) based on the [Arduino](https://www.arduino.cc/) platform. First created in 2011 for RepRap and Ultimaker printers, today Marlin drives a majority of the world's most popular 3D printers. Marlin delivers outstanding print quality with unprecedented control over the process.
