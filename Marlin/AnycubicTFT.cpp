@@ -202,17 +202,26 @@ void AnycubicTFTClass::HandleSpecialMenu()
   if(strcmp(SelectedDirectory, "<special menu>")==0) {
     SpecialMenu=true;
   } else if (strcmp(SelectedDirectory, "<auto tune hotend pid>")==0) {
-    SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune PID");
-    enqueue_and_echo_commands_P(PSTR("M303 C8 S200"));
-  } else if (strcmp(SelectedDirectory, "<auto bed leveling>")==0) {
-    SERIAL_PROTOCOLLNPGM("Special Menu: Auto Bed Leveling");
-    enqueue_and_echo_commands_P(PSTR("G28\nG29"));
+    SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotend PID");
+    enqueue_and_echo_commands_P(PSTR("M303 E0 S200 C8 U1"));
+  } else if (strcmp(SelectedDirectory, "<auto tune hotbed pid>")==0) {
+    SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotbed Pid");
+    enqueue_and_echo_commands_P(PSTR("M303 E-1 S60 C8 U1"));
   } else if (strcmp(SelectedDirectory, "<save eeprom>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Save EEPROM");
     enqueue_and_echo_commands_P(PSTR("M500"));
   } else if (strcmp(SelectedDirectory, "<read eeprom>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Read EEPROM");
     enqueue_and_echo_commands_P(PSTR("M501"));
+  } else if (strcmp(SelectedDirectory, "<preheat bed>")==0) {
+    SERIAL_PROTOCOLLNPGM("Special Menu: Preheat Bed");
+    enqueue_and_echo_commands_P(PSTR("M140 S60"));
+  } else if (strcmp(SelectedDirectory, "<start mesh leveling>")==0) {
+    SERIAL_PROTOCOLLNPGM("Special Menu: Start Mesh Leveling");
+    enqueue_and_echo_commands_P(PSTR("G29 S0"));
+  } else if (strcmp(SelectedDirectory, "<next mesh point>")==0) {
+    SERIAL_PROTOCOLLNPGM("Special Menu: Next Mesh Point");
+    enqueue_and_echo_commands_P(PSTR("G29 S1"));
   } else if (strcmp(SelectedDirectory, "<exit>")==0) {
     SpecialMenu=false;
   }
@@ -227,15 +236,21 @@ void AnycubicTFTClass::Ls()
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
         break;
 
       case 4: // Second Page
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Mesh Leveling>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Mesh Leveling>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Next Mesh Point>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Next Mesh Point>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
         break;
         
       default:

@@ -14,6 +14,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Much more efficient bed heating by using PID control. This uses less power and holds the temperature at a steady level. Highly recommended for printing ABS.
 - Fairly loud fans, while almost every one of them is easily replaced, the stock FW only gives out 9V instead of 12V on the parts cooling fan so some fans like Noctua don't run like they should. This is fixed in this firmware.
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
+- Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 
 ### How to flash this?
 
@@ -75,12 +76,13 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Heatbed PID mode enabled
 - Buffer & baudrate tweaks to improve print quality over USB
 - 12V capability on FAN0 (parts cooling fan) enabled
+- No startup beep
 
 
 ### Additional features by derhopp:
 
-- Subdirectory support: you have to press the round arrow after selecting a directory
-- Special menu in the SD file menu: you have to press the round arrow after selecting a special menu item
+- Subdirectory support: Press the round arrow after selecting a directory
+- Special menu in the SD file menu: Press the round arrow after selecting `Special menu`
 
 
 ### Todo:
