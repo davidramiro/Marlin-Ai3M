@@ -380,9 +380,9 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
   // i3 Mega
-  #define  DEFAULT_Kp 17.5
-  #define  DEFAULT_Ki 1.06
-  #define  DEFAULT_Kd 72.39
+  #define  DEFAULT_Kp 15.73
+  #define  DEFAULT_Ki 0.90
+  #define  DEFAULT_Kd 68.93
 
   // Ultimaker
   //#define  DEFAULT_Kp 22.2
