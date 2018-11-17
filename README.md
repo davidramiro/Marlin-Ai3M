@@ -29,8 +29,9 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 #### Or download precompiled hex:
 
 - Choose the correct hex file:
-- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-flipped.hex`
 - For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX.hex`
+- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-flipped.hex`
+- If you use the original stepper motor drivers (Pololu A4988 afaik), and didn't do anything to your connectors, you can try to use `Marlin-AI3M-XXXXXX-flipped.hex`. Can't promise it will work though.
 
 #### After obtaining the hex file: 
 
