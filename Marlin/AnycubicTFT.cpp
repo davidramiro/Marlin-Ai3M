@@ -218,10 +218,10 @@ void AnycubicTFTClass::HandleSpecialMenu()
     enqueue_and_echo_commands_P(PSTR("M140 S60"));
   } else if (strcmp(SelectedDirectory, "<start mesh leveling>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Start Mesh Leveling");
-    enqueue_and_echo_commands_P(PSTR("G29 S0"));
+    enqueue_and_echo_commands_P(PSTR("G29 S1"));
   } else if (strcmp(SelectedDirectory, "<next mesh point>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Next Mesh Point");
-    enqueue_and_echo_commands_P(PSTR("G29 S1"));
+    enqueue_and_echo_commands_P(PSTR("G29 S2"));
   } else if (strcmp(SelectedDirectory, "<exit>")==0) {
     SpecialMenu=false;
   }
