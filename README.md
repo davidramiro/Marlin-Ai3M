@@ -43,12 +43,12 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 
 #### PID tuning
 
-- Send `M303 E0 S200 C8 U1` to start extruder PID auto tuning
-- Check the output, after finishing it should report `Kp`, `Ki` and `Kd`values
-- Send `M301 Pxx.xx Ixx.xx Dxx.xx`, replacing the `xx.xx` with the values from the output in the order from above
-- Send `M303 E-1 S60 C8` to start heatbed PID auto tuning
-- Same as above, read the values and send them with `M304 Pxxx.xx Ixx.xx Dxxx.xx`
-- Save with `M500`
+- Turn on parts cooling fan, I recommend running it at 70% because of the 12V mod (`M106 S178`)
+- Send `M303 E0 S230 C8 U1` to start extruder PID auto tuning
+- Wait for it to finish
+- Send `M303 E-1 S80 C8 U1` to start heatbed PID auto tuning
+- Wait for it to finish
+- Save with `M500`, turn off fan with `M106 S0`
 
 #### Manual Mesh Bed Leveling
 
