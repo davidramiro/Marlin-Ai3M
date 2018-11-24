@@ -203,7 +203,7 @@ void AnycubicTFTClass::HandleSpecialMenu()
     SpecialMenu=true;
   } else if (strcmp(SelectedDirectory, "<auto tune hotend pid>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotend PID");
-    enqueue_and_echo_commands_P(PSTR("M303 E0 S230 C8 U1"));
+    enqueue_and_echo_commands_P(PSTR("M106 S178\nM303 E0 S240 C8 U1"));
   } else if (strcmp(SelectedDirectory, "<auto tune hotbed pid>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotbed Pid");
     enqueue_and_echo_commands_P(PSTR("M303 E-1 S80 C8 U1"));

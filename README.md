@@ -45,6 +45,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 
 - Turn on parts cooling fan, I recommend running it at 70% because of the 12V mod (`M106 S178`)
 - Send `M303 E0 S230 C8 U1` to start extruder PID auto tuning
+- Send `M303 E0 S240 C8 U1` to start extruder PID auto tuning
 - Wait for it to finish
 - Send `M303 E-1 S80 C8 U1` to start heatbed PID auto tuning
 - Wait for it to finish
