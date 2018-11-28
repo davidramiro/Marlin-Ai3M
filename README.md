@@ -13,6 +13,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Many people have issues getting the Ultrabase leveled perfectly, using Manual Mesh Bed Leveling the printer generates a mesh of the planeness of the bed and compensates for it on the Z-axis for perfect prints without having to level with the screws.
 - Much more efficient bed heating by using PID control. This uses less power and holds the temperature at a steady level. Highly recommended for printing ABS.
 - Fairly loud fans, while almost every one of them is easily replaced, the stock FW only gives out 9V instead of 12V on the parts cooling fan so some fans like Noctua don't run like they should. This is fixed in this firmware.
+- Even better print quality by enabling Linear Advance, S-Curve Acceleration and some tweaks on jerk and acceleration
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 
@@ -30,9 +31,9 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 #### Or download precompiled hex:
 
 - Choose the correct hex file:
-- For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX.hex`
-- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-flipped.hex`
-- If you use the original stepper motor drivers (Pololu A4988 afaik), and didn't do anything to your connectors, you can try to use `Marlin-AI3M-XXXXXX-flipped.hex`. Can't promise it will work though.
+- For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX-TMC2208.hex`
+- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-TMC2208_flipped.hex`
+- If you use the original stepper motor drivers, use `Marlin-AI3M-XXXXXX-stock_drivers.hex`.
 
 #### After obtaining the hex file: 
 
@@ -71,10 +72,12 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Thermal runaway protection enabled
 - TMC2208 configured in standalone mode
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
+- Linear advance enabled (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
+- S-Curve Acceleration enabled
 - Some redundant code removed to save memory
 - Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
 - Heatbed PID mode enabled
-- Buffer & baudrate tweaks to improve print quality over USB
+- Minor tweaks on default jerk and acceleration
 - 12V capability on FAN0 (parts cooling fan) enabled
 - No startup beep
 
