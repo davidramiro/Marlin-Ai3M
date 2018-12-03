@@ -90,7 +90,10 @@ If you have issues with an uneven bed, this is a great feature.
 - After finishing the 25 points, the printer will beep and calculate. After seeing `ok` on the console, enter `M500` to save the mesh to EEPROM
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
-- `G501`and `M420 S1`.
+```
+M501
+M420 S1
+```
 - Enjoy never having to worry about an uneven bed again!
 
 ## Detailed changes:
