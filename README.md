@@ -61,7 +61,7 @@ This firmware is perfectly calibrated for my own machine with TMC2208 (1.015V on
 - If it's less or more than 20mm, add or subtract that value from 100mm, e.g.:
 - If you measure 25mm, your result would be 95mm. If you measure 15mm, your result would be 105mm
 - Calculate your new value: ( 100mm / actually extruded filament ) * 98.26
-- For example, if your markings are at 15mm, you'd calculate: (100/105) * 98.26 = 93.58
+- For example, if your markings are at 15mm, you'd calculate: (100/105) * 92.6 = 88.19
 - Put in the new value like this: `M92 X80.00 Y80.00 Z400.00 Exxx.xx`, replacing `x` with your value
 - Save with `M500`
 
@@ -99,7 +99,6 @@ M420 S1
 ## Detailed changes:
 
 - Thermal runaway protection enabled
-- TMC2208 configured in standalone mode
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
 - Linear advance enabled (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
 - S-Curve Acceleration enabled
