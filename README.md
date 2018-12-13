@@ -18,6 +18,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Even better print quality by enabling Linear Advance, S-Curve Acceleration and some tweaks on jerk and acceleration
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
+- No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 
 ## How to flash this?
@@ -75,19 +76,26 @@ This firmware is perfectly calibrated for my own machine with TMC2208 (1.015V on
 - Wait for it to finish
 - Save with `M500`, turn off fan with `M106 S0`
 
+**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M502` and `M500`.
+
 ### Bonus: Manual Mesh Bed Leveling
 
 If you have issues with an uneven bed, this is a great feature.
 
 - Level your preheated bed as well as you can
 - Send `G29 S1`, your nozzle will go to the first calibration position
-- Don't adjust the bed itself, only use software from here on:
-- Use the onscreen controls or a tool like OctoPrint to lower or raise your nozzle
+- Don't adjust the bed itself with screws, only use software from here on:
+- Use a paper (I recommend using thermopaper like a receipt or baking paper)
+- Use the onscreen controls or a tool like OctoPrint to lower or raise your nozzle until you feel a light resistance
 - If 0.1mm steps are not enough, you can send specific commands down to 0.02mm via those three commands:
 - To raise: `G91`, `G1 Z+0.02`, `G90`
 - To lower: `G91`, `G1 Z-0.02`, `G90`
-- When done, send `G29 S2` and repeat the process for the next command. Continue with `G29 S2`every time.
-- After finishing the 25 points, the printer will beep and calculate. After seeing `ok` on the console, enter `M500` to save the mesh to EEPROM
+- When done, send `G29 S2` and repeat the process for the next level point. Continue with `G29 S2`every time.
+- After finishing the 25 points, the printer will beep and calculate. After seeing `ok` on the console, send these two commands to your printer:
+```
+M420 S1
+M500
+```
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
 ```
@@ -96,12 +104,24 @@ M420 S1
 ```
 - Enjoy never having to worry about an uneven bed again!
 
+### Testing your bed leveling
+
+- No need to download or create a bed leveling test, simply send those commands to your printer:
+```
+G28
+G26 C H200 P25 R25
+```
+- To adjust your filament's needed temperature, change the number of the `H` parameter
+- If your leveling is good, you will have a complete pattern of your mesh on your bed that you can peel off in one piece
+- Optional: Hang it up on a wall to display it as a trophy of how great your leveling skills are.
+
 ## Detailed changes:
 
 - Thermal runaway protection enabled
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
 - Linear advance enabled (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
 - S-Curve Acceleration enabled
+- G26 Mesh Validation enabled
 - Some redundant code removed to save memory
 - Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
 - Heatbed PID mode enabled
