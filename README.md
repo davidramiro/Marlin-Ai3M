@@ -61,7 +61,7 @@ This firmware is perfectly calibrated for my own machine with TMC2208 (1.015V on
 - Measure where your pencil marking is now. If it's exactly 20mm to the extruder, it's perfectly calibrated
 - If it's less or more than 20mm, add or subtract that value from 100mm, e.g.:
 - If you measure 25mm, your result would be 95mm. If you measure 15mm, your result would be 105mm
-- Calculate your new value: ( 100mm / actually extruded filament ) * 98.26
+- Calculate your new value: ( 100mm / actually extruded filament ) * 92.6
 - For example, if your markings are at 15mm, you'd calculate: (100/105) * 92.6 = 88.19
 - Put in the new value like this: `M92 X80.00 Y80.00 Z400.00 Exxx.xx`, replacing `x` with your value
 - Save with `M500`
