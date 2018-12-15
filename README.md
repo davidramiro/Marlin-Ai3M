@@ -21,6 +21,11 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 
+## Known issues:
+
+- Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
+**Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
+
 ## How to flash this?
 
 I provided three different precompiled hex files: One for no modifications on the stepper motor drivers - good for people who didn't touch anything yet, one for boards with TMC2208 installed and where the connectors have been flipped and one with TMC2208 and the connectors in original orientation.
@@ -31,6 +36,7 @@ I provided three different precompiled hex files: One for no modifications on th
 - For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX-TMC2208.hex`
 - For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-TMC2208_flipped.hex`
 - If you use the original stepper motor drivers, use `Marlin-AI3M-XXXXXX-stock_drivers.hex`.
+- If you use a newer version of the TMC2208 that doesn't require the connector to be flipped (e.g. BIQU TMC2208, KINGPRINT TMC2208), please use `Marlin-AI3M-XXXXXX-TMC2208_flipped.hex`.
 
 ### Or compile it yourself:
 
