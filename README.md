@@ -76,13 +76,14 @@ This firmware is perfectly calibrated for my own machine with TMC2208 (1.015V on
 ### PID tuning
 
 - Turn on parts cooling fan, I recommend running it at 70% because of the 12V mod (`M106 S191`)
-- Send `M303 E0 S230 C8 U1` to start extruder PID auto tuning
+- Send `M303 E0 S210 C10 U1` to start extruder PID auto tuning
 - Wait for it to finish
-- Send `M303 E-1 S80 C8 U1` to start heatbed PID auto tuning
+- Send `M303 E-1 S60 C10 U1` to start heatbed PID auto tuning
 - Wait for it to finish
 - Save with `M500`, turn off fan with `M106 S0`
+Note: These commands are tweaked for PLA printing at up to 210/60°C. If you run into issues at higher temperatures (e.g. PETG & ABS), simply change the `S` parameter to your desired temperature
 
-**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M502` and `M500`.
+**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
 
 ### Bonus: Manual Mesh Bed Leveling
 
@@ -109,6 +110,7 @@ M501
 M420 S1
 ```
 - Enjoy never having to worry about an uneven bed again!
+Note: By default, this firmware probes 25 points. This might take little while, if you you don't need an as precise mesh, you can change the grid size by sending `G29 Px` before starting the levling. E.g., `G29 P3` results in a 3x3 mesh, thus only 9 points.
 
 ### Testing your bed leveling
 
