@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<profile name="davidramiro Default PLA" version="2018-12-02 17:26:14" app="S3D-Software 4.1.0">
+<profile name="davidramiro Default PLA" version="2018-12-18 17:42:50" app="S3D-Software 4.1.0">
   <baseProfile>Anycubic i3 Mega</baseProfile>
   <printMaterial>PLA</printMaterial>
   <printQuality>Medium</printQuality>
@@ -11,9 +11,9 @@
     <width>0.4</width>
     <extrusionMultiplier>1</extrusionMultiplier>
     <useRetract>1</useRetract>
-    <retractionDistance>6.5</retractionDistance>
-    <extraRestartDistance>0</extraRestartDistance>
-    <retractionZLift>0.1</retractionZLift>
+    <retractionDistance>5.5</retractionDistance>
+    <extraRestartDistance>-0.1</extraRestartDistance>
+    <retractionZLift>0</retractionZLift>
     <retractionSpeed>4200</retractionSpeed>
     <useCoasting>1</useCoasting>
     <coastingDistance>0.2</coastingDistance>
@@ -39,7 +39,7 @@
   <raftTopLayers>1</raftTopLayers>
   <raftBaseLayers>1</raftBaseLayers>
   <raftOffset>2</raftOffset>
-  <raftSeparationDistance>0.14</raftSeparationDistance>
+  <raftSeparationDistance>0.2</raftSeparationDistance>
   <raftTopInfill>100</raftTopInfill>
   <aboveRaftSpeedMultiplier>0.3</aboveRaftSpeedMultiplier>
   <useSkirt>1</useSkirt>
@@ -61,7 +61,7 @@
   <oozeShieldSpeedMultiplier>1</oozeShieldSpeedMultiplier>
   <infillExtruder>0</infillExtruder>
   <internalInfillPattern>Fast Honeycomb</internalInfillPattern>
-  <externalInfillPattern>Rectilinear</externalInfillPattern>
+  <externalInfillPattern>Concentric</externalInfillPattern>
   <infillPercentage>15</infillPercentage>
   <outlineOverlapPercentage>20</outlineOverlapPercentage>
   <infillExtrusionWidthPercentage>105</infillExtrusionWidthPercentage>
@@ -72,7 +72,7 @@
   <externalInfillAngles>45,-45</externalInfillAngles>
   <generateSupport>1</generateSupport>
   <supportExtruder>0</supportExtruder>
-  <supportInfillPercentage>25</supportInfillPercentage>
+  <supportInfillPercentage>60</supportInfillPercentage>
   <supportExtraInflation>0</supportExtraInflation>
   <supportBaseLayers>0</supportBaseLayers>
   <denseSupportExtruder>0</denseSupportExtruder>
@@ -83,33 +83,33 @@
   <supportUpperSeparationLayers>1</supportUpperSeparationLayers>
   <supportLowerSeparationLayers>1</supportLowerSeparationLayers>
   <supportType>0</supportType>
-  <supportGridSpacing>3</supportGridSpacing>
-  <maxOverhangAngle>55</maxOverhangAngle>
+  <supportGridSpacing>1</supportGridSpacing>
+  <maxOverhangAngle>50</maxOverhangAngle>
   <supportAngles>0</supportAngles>
   <temperatureController name="Primary Extruder">
     <temperatureNumber>0</temperatureNumber>
     <isHeatedBed>0</isHeatedBed>
     <stabilizeAtStartup>1</stabilizeAtStartup>
-    <setpoint layer="1" temperature="205"/>
-    <setpoint layer="2" temperature="200"/>
+    <setpoint layer="1" temperature="200"/>
+    <setpoint layer="2" temperature="195"/>
   </temperatureController>
   <temperatureController name="Heated Bed">
     <temperatureNumber>0</temperatureNumber>
     <isHeatedBed>1</isHeatedBed>
     <stabilizeAtStartup>1</stabilizeAtStartup>
-    <setpoint layer="1" temperature="62"/>
-    <setpoint layer="5" temperature="58"/>
+    <setpoint layer="1" temperature="60"/>
   </temperatureController>
   <fanSpeed>
     <setpoint layer="1" speed="0"/>
-    <setpoint layer="3" speed="45"/>
+    <setpoint layer="2" speed="30"/>
+    <setpoint layer="3" speed="40"/>
+    <setpoint layer="4" speed="50"/>
     <setpoint layer="5" speed="60"/>
-    <setpoint layer="10" speed="100"/>
   </fanSpeed>
   <blipFanToFullPower>0</blipFanToFullPower>
   <adjustSpeedForCooling>1</adjustSpeedForCooling>
   <minSpeedLayerTime>15</minSpeedLayerTime>
-  <minCoolingSpeedSlowdown>40</minCoolingSpeedSlowdown>
+  <minCoolingSpeedSlowdown>30</minCoolingSpeedSlowdown>
   <increaseFanForCooling>0</increaseFanForCooling>
   <minFanLayerTime>45</minFanLayerTime>
   <maxCoolingFanSpeed>100</maxCoolingFanSpeed>
@@ -155,8 +155,8 @@
   <celebration>0</celebration>
   <celebrationSong>Star Wars</celebrationSong>
   <postProcessing></postProcessing>
-  <defaultSpeed>3600</defaultSpeed>
-  <outlineUnderspeed>0.7</outlineUnderspeed>
+  <defaultSpeed>3300</defaultSpeed>
+  <outlineUnderspeed>0.8</outlineUnderspeed>
   <solidInfillUnderspeed>0.8</solidInfillUnderspeed>
   <supportUnderspeed>0.8</supportUnderspeed>
   <rapidXYspeed>4800</rapidXYspeed>
@@ -203,22 +203,22 @@
       <temperatureNumber>0</temperatureNumber>
       <isHeatedBed>0</isHeatedBed>
       <stabilizeAtStartup>1</stabilizeAtStartup>
-      <setpoint layer="1" temperature="205"/>
-      <setpoint layer="2" temperature="200"/>
+      <setpoint layer="1" temperature="200"/>
+      <setpoint layer="2" temperature="195"/>
     </temperatureController>
     <temperatureController name="Heated Bed">
       <temperatureNumber>0</temperatureNumber>
       <isHeatedBed>1</isHeatedBed>
       <stabilizeAtStartup>1</stabilizeAtStartup>
-      <setpoint layer="1" temperature="62"/>
-      <setpoint layer="5" temperature="58"/>
+      <setpoint layer="1" temperature="60"/>
     </temperatureController>
     <globalExtrusionMultiplier>1</globalExtrusionMultiplier>
     <fanSpeed>
       <setpoint layer="1" speed="0"/>
-      <setpoint layer="3" speed="45"/>
+      <setpoint layer="2" speed="30"/>
+      <setpoint layer="3" speed="40"/>
+      <setpoint layer="4" speed="50"/>
       <setpoint layer="5" speed="60"/>
-      <setpoint layer="10" speed="100"/>
     </fanSpeed>
   </autoConfigureMaterial>
   <autoConfigureMaterial name="ABS">
@@ -251,14 +251,14 @@
     <bottomSolidLayers>3</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
     <infillPercentage>15</infillPercentage>
-    <supportInfillPercentage>25</supportInfillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
   </autoConfigureQuality>
   <autoConfigureQuality name="High">
-    <layerHeight>0.1</layerHeight>
+    <layerHeight>0.08</layerHeight>
     <topSolidLayers>5</topSolidLayers>
     <bottomSolidLayers>5</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
-    <infillPercentage>25</infillPercentage>
+    <infillPercentage>15</infillPercentage>
     <supportInfillPercentage>25</supportInfillPercentage>
   </autoConfigureQuality>
 </profile>
