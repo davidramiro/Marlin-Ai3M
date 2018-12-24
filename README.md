@@ -15,7 +15,7 @@ While the i3 Mega is a great printer for it's price and produces fantastic resul
 - Many people have issues getting the Ultrabase leveled perfectly, using Manual Mesh Bed Leveling the printer generates a mesh of the planeness of the bed and compensates for it on the Z-axis for perfect prints without having to level with the screws.
 - Much more efficient bed heating by using PID control. This uses less power and holds the temperature at a steady level. Highly recommended for printing ABS.
 - Fairly loud fans, while almost every one of them is easily replaced, the stock FW only gives out 9V instead of 12V on the parts cooling fan so some fans like Noctua don't run like they should. This is fixed in this firmware.
-- Even better print quality by enabling Linear Advance, S-Curve Acceleration and some tweaks on jerk and acceleration
+- Even better print quality by adding Linear Advance, S-Curve Acceleration and some tweaks on jerk and acceleration.
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor. 
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
 - No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
@@ -34,9 +34,10 @@ I provided three different precompiled hex files: One for no modifications on th
 
 - Choose the correct hex file:
 - For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX-TMC2208.hex`
-- For TMC2208 with flipped connectors, use `Marlin-AI3M-XXXXXX-TMC2208_flipped.hex`
+- If you use TMC2208 and already reversed your connectors, use `Marlin-AI3M-XXXXXX-TMC2208_reversed.hex`
+- If you use a newer version of the TMC2208 that doesn't require the connector to be reversed (TMC2208 "v2.0" written on the PCB, chip on the top side), please also use `Marlin-AI3M-XXXXXX-TMC2208_reversed.hex`.
 - If you use the original stepper motor drivers, use `Marlin-AI3M-XXXXXX-stock_drivers.hex`.
-- If you use a newer version of the TMC2208 that doesn't require the connector to be flipped (e.g. BIQU TMC2208, KINGPRINT TMC2208), please use `Marlin-AI3M-XXXXXX-TMC2208_flipped.hex`.
+
 
 ### Or compile it yourself:
 
@@ -50,42 +51,12 @@ I provided three different precompiled hex files: One for no modifications on th
 ### After obtaining the hex file: 
 
 - Flash the hex with Cura, OctoPrint or similar
+- Use a tool with a terminal (OctoPrint, Pronterface, Repetier Host, ...) to send commands to your printer. 
 - Connect to the printer and send the following commands:
 - `M502` - load hard coded default values
 - `M500` - save them to EEPROM
 
-## After flashing:
-
-This firmware is perfectly calibrated for my own machine with TMC2208 (1.015V on the axis, 1.152V on the extruder). If you also have these stepper motor drivers and you run them on similar voltages, this firmware should do great prints right after flashing. Nevertheless, a PID tune and especially calibrating the extruder is **highly recommended**. Simply follow the instructions below.
-
-### Calibrating extruder steps
-
-- Preheat the hotend with `M104 S200`
-- Use a caliper or measuring tape and mark 120mm (measured downwards from the extruder intake) with a pencil on the filament
-- Send `G91`, `G1 E100 F300` and `G90` in that order
-- Your extruder will feed 100mm of filament now
-- Measure where your pencil marking is now. If it's exactly 20mm to the extruder, it's perfectly calibrated
-- If it's less or more than 20mm, add or subtract that value from 100mm, e.g.:
-- If you measure 25mm, your result would be 95mm. If you measure 15mm, your result would be 105mm
-- Calculate your new value: ( 100mm / actually extruded filament ) * 92.6
-- For example, if your markings are at 15mm, you'd calculate: (100/105) * 92.6 = 88.19
-- Put in the new value like this: `M92 X80.00 Y80.00 Z400.00 Exxx.xx`, replacing `x` with your value
-- Save with `M500`
-
-
-### PID tuning
-
-- Turn on parts cooling fan, I recommend running it at 70% because of the 12V mod (`M106 S191`)
-- Send `M303 E0 S210 C10 U1` to start extruder PID auto tuning
-- Wait for it to finish
-- Send `M303 E-1 S60 C10 U1` to start heatbed PID auto tuning
-- Wait for it to finish
-- Save with `M500`, turn off fan with `M106 S0`
-Note: These commands are tweaked for PLA printing at up to 210/60°C. If you run into issues at higher temperatures (e.g. PETG & ABS), simply change the `S` parameter to your desired temperature
-
-**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
-
-### Bonus: Manual Mesh Bed Leveling
+### Manual Mesh Bed Leveling
 
 If you have issues with an uneven bed, this is a great feature.
 
@@ -98,11 +69,7 @@ If you have issues with an uneven bed, this is a great feature.
 - To raise: `G91`, `G1 Z+0.02`, `G90`
 - To lower: `G91`, `G1 Z-0.02`, `G90`
 - When done, send `G29 S2` and repeat the process for the next level point. Continue with `G29 S2`every time.
-- After finishing the 25 points, the printer will beep and calculate. After seeing `ok` on the console, send these two commands to your printer:
-```
-M420 S1
-M500
-```
+- After finishing the 25 points, the printer will beep and calculate. 
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
 ```
@@ -123,11 +90,45 @@ G26 C H200 P25 R25
 - If your leveling is good, you will have a complete pattern of your mesh on your bed that you can peel off in one piece
 - Optional: Hang it up on a wall to display it as a trophy of how great your leveling skills are.
 
+## Calibration (optional):
+
+This firmware is using Anycubic's default extruder values and pretty well calibrated PID values. If you experience fluctuating temperatures or subpar extrusion, calibration is always recommended.
+
+### Calibrating extruder steps
+
+- Preheat the hotend with `M104 S220`
+- Send `M83` to prepare the extruder
+- Use a caliper or measuring tape and mark 120mm (measured downwards from the extruder intake) with a pencil on the filament
+- Send `G1 E100 F100`
+- Your extruder will feed 100mm of filament now (takes 60 seconds)
+- Measure where your pencil marking is now. If it's exactly 20mm to the extruder, it's perfectly calibrated
+- If it's less or more than 20mm, add or subtract that value from 100mm, e.g.:
+- If you measure 25mm, your result would be 95mm. If you measure 15mm, your result would be 105mm
+- Calculate your new value: ( 100mm / actually extruded filament ) * 92.6
+- For example, if your markings are at 15mm, you'd calculate: (100/105) * 92.6 = 88.19
+- Put in the new value like this: `M92 X80.00 Y80.00 Z400.00 Exxx.xx`, replacing `x` with your value
+- Save with `M500` (You can repeat the process to achieve even more precision)
+- Finish with `M82`
+
+
+### PID tuning
+
+- Turn on parts cooling fan, I recommend running it at 70% because of the 12V mod (`M106 S191`)
+- Send `M303 E0 S210 C6 U1` to start extruder PID auto tuning
+- Wait for it to finish
+- Send `M303 E-1 S60 C6 U1` to start heatbed PID auto tuning
+- Wait for it to finish
+- Save with `M500`, turn off fan with `M106 S0`
+Note: These commands are tweaked for PLA printing at up to 210/60°C. If you run into issues at higher temperatures (e.g. PETG & ABS), simply change the `S` parameter to your desired temperature
+
+**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
+
+
 ## Detailed changes:
 
 - Thermal runaway protection enabled
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
-- Linear advance enabled (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
+- Linear advance unlocked (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
 - S-Curve Acceleration enabled
 - G26 Mesh Validation enabled
 - Some redundant code removed to save memory

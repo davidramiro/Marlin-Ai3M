@@ -420,6 +420,8 @@
  */
 #define PIDTEMPBED
 
+#define MAX_CYCLE_TIME_PID_AUTOTUNE 40L
+
 //#define BED_LIMIT_SWITCHING
 
 /**
