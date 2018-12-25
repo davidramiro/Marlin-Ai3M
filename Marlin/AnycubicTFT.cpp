@@ -210,8 +210,8 @@ void AnycubicTFTClass::HandleSpecialMenu()
   } else if (strcmp(SelectedDirectory, "<save eeprom>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Save EEPROM");
     enqueue_and_echo_commands_P(PSTR("M500"));
-  } else if (strcmp(SelectedDirectory, "<read eeprom>")==0) {
-    SERIAL_PROTOCOLLNPGM("Special Menu: Read EEPROM");
+  } else if (strcmp(SelectedDirectory, "<load fw defaults>")==0) {
+    SERIAL_PROTOCOLLNPGM("Special Menu: Load FW Defaults");
     enqueue_and_echo_commands_P(PSTR("M501"));
   } else if (strcmp(SelectedDirectory, "<preheat bed>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Preheat Bed");
@@ -233,7 +233,7 @@ void AnycubicTFTClass::HandleSpecialMenu()
     enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.02\nG90"));
   } else if (strcmp(SelectedDirectory, "<z down 0.1>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.1");
-    enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.02\nG90"));
+    enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.1\nG90"));
   } else if (strcmp(SelectedDirectory, "<exit>")==0) {
     SpecialMenu=false;
   }
@@ -272,8 +272,8 @@ void AnycubicTFTClass::Ls()
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
-        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Read EEPROM>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
+        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
         break;
         
       default:
