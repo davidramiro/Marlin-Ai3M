@@ -73,6 +73,7 @@ If you have issues with an uneven bed, this is a great feature.
 - I also added fine Z axis controls to the special menu, might be easier to use.
 - When done, send `G29 S2` and repeat the process for the next level point. Continue with `G29 S2`every time.
 - After finishing the 25 points, the printer will beep and calculate. 
+- After seeing `ok` in the console, send `M500` to save.
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
 ```
