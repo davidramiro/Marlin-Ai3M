@@ -203,7 +203,7 @@ void AnycubicTFTClass::HandleSpecialMenu()
     SpecialMenu=true;
   } else if (strcmp(SelectedDirectory, "<auto tune hotend pid>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotend PID");
-    enqueue_and_echo_commands_P(PSTR("M106 S178\nM303 E0 S210 C6 U1"));
+    enqueue_and_echo_commands_P(PSTR("M106 S204\nM303 E0 S210 C6 U1"));
   } else if (strcmp(SelectedDirectory, "<auto tune hotbed pid>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Auto Tune Hotbed Pid");
     enqueue_and_echo_commands_P(PSTR("M303 E-1 S60 C6 U1"));
@@ -212,7 +212,7 @@ void AnycubicTFTClass::HandleSpecialMenu()
     enqueue_and_echo_commands_P(PSTR("M500"));
   } else if (strcmp(SelectedDirectory, "<load fw defaults>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Load FW Defaults");
-    enqueue_and_echo_commands_P(PSTR("M501"));
+    enqueue_and_echo_commands_P(PSTR("M502"));
   } else if (strcmp(SelectedDirectory, "<preheat bed>")==0) {
     SERIAL_PROTOCOLLNPGM("Special Menu: Preheat Bed");
     enqueue_and_echo_commands_P(PSTR("M140 S60"));
