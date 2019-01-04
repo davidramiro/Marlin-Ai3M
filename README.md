@@ -74,6 +74,7 @@ If you have issues with an uneven bed, this is a great feature.
 - When done, send `G29 S2` and repeat the process for the next level point. Continue with `G29 S2`every time.
 - After finishing the 25 points, the printer will beep and calculate. 
 - After seeing `ok` in the console, send `M500` to save.
+- Reboot the printer.
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
 ```
@@ -98,7 +99,6 @@ G26 C H200 P25 R25
 
 ### Calibrating extruder & PID
 
-This firmware is using Anycubic's default extruder values and pretty well calibrated PID values. If you experience fluctuating temperatures or subpar extrusion, calibration is recommended.
 
 ### Extruder steps
 
@@ -119,6 +119,8 @@ This firmware is using Anycubic's default extruder values and pretty well calibr
 
 ### PID tuning
 
+**PID calibration is only necessary if you experience fluctuating temperatures.**
+
 - Turn on parts cooling fan If you have a radial blower fan like the original one, I generally recommend running it at 70% because of the 12V mod (`M106 S191`). Remember to also limit it in your slicer.
 - Send `M303 E0 S210 C6 U1` to start extruder PID auto tuning
 - Wait for it to finish
@@ -128,7 +130,7 @@ This firmware is using Anycubic's default extruder values and pretty well calibr
 
 Note: These commands are tweaked for PLA printing at up to 210/60 °C. If you run into issues at higher temperatures (e.g. PETG & ABS), simply change the `S` parameter to your desired temperature
 
-**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
+**Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature after tuning, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
 
 ## Detailed changes:
 
