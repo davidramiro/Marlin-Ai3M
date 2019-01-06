@@ -33,6 +33,7 @@ I provided three different precompiled hex files: One for no modifications on th
 
 ### Choose your precompiled hex:
 
+- Download the precompiled firmware here: [Releases](https://github.com/davidramiro/Marlin-AI3M/releases)
 - Choose the correct hex file:
 - For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX-TMC2208.hex`
 - If you use TMC2208 and already reversed your connectors, use `Marlin-AI3M-XXXXXX-TMC2208_reversed.hex`
@@ -131,6 +132,22 @@ G26 C H200 P25 R25
 Note: These commands are tweaked for PLA printing at up to 210/60 °C. If you run into issues at higher temperatures (e.g. PETG & ABS), simply change the `S` parameter to your desired temperature
 
 **Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature after tuning, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
+
+## Updating
+
+### Back up & restore your settings
+
+Some updates require the storage to be cleared (`M502`), if mentioned in the update log. In those cases, before updating, send `M503` and make a backup of all the lines starting with:
+
+```
+M92
+G29
+M301
+M304
+```
+
+After flashing the new version, issue a `M502` and `M500`. After that, enter every line you saved before and finish by saving with `M500`.
+
 
 ## Detailed changes:
 
