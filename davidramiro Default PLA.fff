@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<profile name="davidramiro Default PLA" version="2018-12-18 17:42:50" app="S3D-Software 4.1.0">
+<profile name="davidramiro Default PLA" version="2019-01-06 16:40:07" app="S3D-Software 4.1.1">
   <baseProfile>Anycubic i3 Mega</baseProfile>
   <printMaterial>PLA</printMaterial>
   <printQuality>Medium</printQuality>
@@ -11,7 +11,7 @@
     <width>0.4</width>
     <extrusionMultiplier>1</extrusionMultiplier>
     <useRetract>1</useRetract>
-    <retractionDistance>5.5</retractionDistance>
+    <retractionDistance>6.5</retractionDistance>
     <extraRestartDistance>-0.1</extraRestartDistance>
     <retractionZLift>0</retractionZLift>
     <retractionSpeed>4200</retractionSpeed>
@@ -24,7 +24,7 @@
   <layerHeight>0.16</layerHeight>
   <topSolidLayers>4</topSolidLayers>
   <bottomSolidLayers>3</bottomSolidLayers>
-  <perimeterOutlines>2</perimeterOutlines>
+  <perimeterOutlines>3</perimeterOutlines>
   <printPerimetersInsideOut>1</printPerimetersInsideOut>
   <startPointOption>3</startPointOption>
   <startPointOriginX>0</startPointOriginX>
@@ -64,7 +64,7 @@
   <externalInfillPattern>Concentric</externalInfillPattern>
   <infillPercentage>15</infillPercentage>
   <outlineOverlapPercentage>20</outlineOverlapPercentage>
-  <infillExtrusionWidthPercentage>105</infillExtrusionWidthPercentage>
+  <infillExtrusionWidthPercentage>100</infillExtrusionWidthPercentage>
   <minInfillLength>5</minInfillLength>
   <infillLayerInterval>1</infillLayerInterval>
   <internalInfillAngles>0</internalInfillAngles>
@@ -72,18 +72,18 @@
   <externalInfillAngles>45,-45</externalInfillAngles>
   <generateSupport>1</generateSupport>
   <supportExtruder>0</supportExtruder>
-  <supportInfillPercentage>60</supportInfillPercentage>
-  <supportExtraInflation>0</supportExtraInflation>
+  <supportInfillPercentage>25</supportInfillPercentage>
+  <supportExtraInflation>0.2</supportExtraInflation>
   <supportBaseLayers>0</supportBaseLayers>
   <denseSupportExtruder>0</denseSupportExtruder>
   <denseSupportLayers>0</denseSupportLayers>
-  <denseSupportInfillPercentage>70</denseSupportInfillPercentage>
+  <denseSupportInfillPercentage>25</denseSupportInfillPercentage>
   <supportLayerInterval>1</supportLayerInterval>
   <supportHorizontalPartOffset>0.3</supportHorizontalPartOffset>
   <supportUpperSeparationLayers>1</supportUpperSeparationLayers>
   <supportLowerSeparationLayers>1</supportLowerSeparationLayers>
   <supportType>0</supportType>
-  <supportGridSpacing>1</supportGridSpacing>
+  <supportGridSpacing>4</supportGridSpacing>
   <maxOverhangAngle>50</maxOverhangAngle>
   <supportAngles>0</supportAngles>
   <temperatureController name="Primary Extruder">
@@ -150,12 +150,12 @@
   <layerChangeGcode></layerChangeGcode>
   <retractionGcode></retractionGcode>
   <toolChangeGcode></toolChangeGcode>
-  <endingGcode>G1 X0 Y195 F2400 ; position for easy part removal,M106 S0 ; fan off,M104 S0 ; turn off extruder,M140 S0 ; turn off bed,M84 ; disable motors,M300 S880 P52,M300 S932 P52,M300 S987 P52,M300 S2217 P210,M300 S0 P420,M300 S1108 P210,M300 S1479 P210,M300 S1108 P210,M300 S1661 P210</endingGcode>
+  <endingGcode>G1 X0 Y195 F2400 ; position for easy part removal,M106 S0 ; fan off,M104 S0 ; turn off extruder,M140 S0 ; turn off bed,M84 ; disable motors,M300 S880 P52 ; intel sound,M300 S932 P52,M300 S987 P52,M300 S2217 P210,M300 S0 P420,M300 S1108 P210,M300 S1479 P210,M300 S1108 P210,M300 S1661 P210</endingGcode>
   <exportFileFormat>gcode</exportFileFormat>
   <celebration>0</celebration>
   <celebrationSong>Star Wars</celebrationSong>
   <postProcessing></postProcessing>
-  <defaultSpeed>3300</defaultSpeed>
+  <defaultSpeed>3600</defaultSpeed>
   <outlineUnderspeed>0.8</outlineUnderspeed>
   <solidInfillUnderspeed>0.8</solidInfillUnderspeed>
   <supportUnderspeed>0.8</supportUnderspeed>
@@ -221,28 +221,12 @@
       <setpoint layer="5" speed="60"/>
     </fanSpeed>
   </autoConfigureMaterial>
-  <autoConfigureMaterial name="ABS">
-    <globalExtruderTemperature>225</globalExtruderTemperature>
-    <globalBedTemperature>90</globalBedTemperature>
-    <globalExtrusionMultiplier>1</globalExtrusionMultiplier>
-    <fanSpeed>
-      <setpoint layer="1" speed="0"/>
-    </fanSpeed>
-  </autoConfigureMaterial>
-  <autoConfigureMaterial name="Nylon">
-    <globalExtruderTemperature>220</globalExtruderTemperature>
-    <globalBedTemperature>90</globalBedTemperature>
-    <globalExtrusionMultiplier>1</globalExtrusionMultiplier>
-    <fanSpeed>
-      <setpoint layer="1" speed="0"/>
-    </fanSpeed>
-  </autoConfigureMaterial>
   <autoConfigureQuality name="Fast">
     <layerHeight>0.2</layerHeight>
     <topSolidLayers>2</topSolidLayers>
     <bottomSolidLayers>2</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
-    <infillPercentage>0</infillPercentage>
+    <infillPercentage>5</infillPercentage>
     <supportInfillPercentage>25</supportInfillPercentage>
   </autoConfigureQuality>
   <autoConfigureQuality name="Medium">
@@ -251,14 +235,14 @@
     <bottomSolidLayers>3</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
     <infillPercentage>15</infillPercentage>
-    <supportInfillPercentage>60</supportInfillPercentage>
+    <supportInfillPercentage>25</supportInfillPercentage>
   </autoConfigureQuality>
   <autoConfigureQuality name="High">
     <layerHeight>0.08</layerHeight>
     <topSolidLayers>5</topSolidLayers>
     <bottomSolidLayers>5</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
-    <infillPercentage>15</infillPercentage>
+    <infillPercentage>35</infillPercentage>
     <supportInfillPercentage>25</supportInfillPercentage>
   </autoConfigureQuality>
 </profile>
