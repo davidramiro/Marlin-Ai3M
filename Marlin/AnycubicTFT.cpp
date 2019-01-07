@@ -465,6 +465,9 @@ void AnycubicTFTClass::StateHandler()
 #ifdef ANYCUBIC_TFT_DEBUG
       SERIAL_ECHOLNPGM("TFT Serial Debug: SD print stopped... J16");
 #endif
+      if((current_position[Z_AXIS]>200)) enqueue_and_echo_commands_P(PSTR("G91\nG1 Z2 F240\nG90"));
+      if((current_position[Z_AXIS]<200)) enqueue_and_echo_commands_P(PSTR("G91\nG1 Z5 F240\nG90"));
+      if((current_position[Z_AXIS]<150)) enqueue_and_echo_commands_P(PSTR("G91\nG1 Z45 F240\nG90"));
       enqueue_and_echo_commands_P(PSTR("M84"));
     }
 #endif    
