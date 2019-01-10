@@ -13,6 +13,8 @@ Note: This is just a firmware, not magic. A big part of print quality still depe
 
 - Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
 **Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
+- The firmware is not reflected on the TFT-display. As the display has its own closed source firmware, you will remain to see the original Anycubic menu showing the old version number (1.1.0). If you want to find out what version really is on your printer you can send the code `M115` and read the response.
+- Possible bugs with aborting prints after pausing via display. Simply reboot the printer manually if you find yourself unable to cancel the print.
 
 ## Why use this?
 
@@ -160,12 +162,12 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
 - Heatbed PID mode enabled
 - Minor tweaks on default jerk and acceleration
+
+
+## Changes by derhopp:
+
 - 12V capability on FAN0 (parts cooling fan) enabled
-- No startup beep
-
-
-## Menu mods by derhopp:
-
+- Buzzer disabled (e.g. startup beep)
 - Subdirectory support: Press the round arrow after selecting a directory
 - Special menu in the SD file menu: Press the round arrow after selecting `Special menu`
 
