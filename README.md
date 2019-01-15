@@ -65,18 +65,50 @@ I provided three different precompiled hex files: One for no modifications on th
 
 If you have issues with an uneven bed, this is a great feature.
 
-- Level your preheated bed as well as you can
-- Send `G29 S1`, your nozzle will go to the first calibration position
-- Don't adjust the bed itself with screws, only use software from here on:
-- Use a paper (I recommend using thermopaper like a receipt or baking paper)
-- Use the onscreen controls or a tool like OctoPrint to lower or raise your nozzle until you feel a light resistance
-- If 0.1 mm steps are not enough, you can send specific commands down to 0.02 mm via those three commands:
-- To raise: `G91`, `G1 Z+0.02`, `G90` (one after another, not in one line)
-- To lower: `G91`, `G1 Z-0.02`, `G90`
-- I also added fine Z axis controls to the special menu, might be easier to use.
-- When done, send `G29 S2` and repeat the process for the next level point. Continue with `G29 S2`every time.
-- After finishing the 25 points, the printer will beep and calculate. 
-- After seeing `ok` in the console, send `M500` to save.
+- Insert an SD card, enter the print menu.
+- Enter the special menu by selecting it and pressing the round arrow:
+
+![Special Menu][menu]
+
+- In this menu, the round arrow is used to execute the command you selected. 
+- Preheat the bed to 60°C with this entry: (if you usually print with a hotter bed, use the Anycubic menu)
+
+![Preheat bed][preheat]
+
+- Level your preheated bed as well as you can with the four screws.
+- Start the mesh leveling:
+
+![Start MMBL][start]
+
+- Your nozzle will now move to the first calibration position.
+- Don't adjust the bed itself with screws, only use software from here on!
+- Use a paper - I recommend using thermopaper like a receipt or baking paper
+- Use the onscreen controls to lower or raise your nozzle until you feel a light resistance: (If you want to send the same command multiple times, select the item again, even though it is still marked red.)
+
+![Z axis controls][control]
+
+- Once finished , move to the next point:
+
+![Next mesh point][next]
+
+- Repeat the last two steps until all 25 points are done.
+- Your printer will beep, wait 20 seconds and then save:
+
+
+![Save to EEPROM][save]
+
+- Reboot your printer.
+
+
+[menu]: https://kore.cc/i3mega/mmbl/menu.jpg "Special Menu"
+[preheat]: https://kore.cc/i3mega/mmbl/preheat.jpg "Preheat 60C"
+[start]: https://kore.cc/i3mega/mmbl/start.jpg "Start Mesh leveling"
+[next]: https://kore.cc/i3mega/mmbl/next.jpg "Next Mesh point"
+[control]: https://kore.cc/i3mega/mmbl/control.jpg "Z axis control"
+[save]: https://kore.cc/i3mega/mmbl/save.jpg "Save to EEPROM"
+
+### After leveling:
+
 - Reboot the printer.
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
@@ -86,7 +118,15 @@ M420 S1
 ```
 - Enjoy never having to worry about an uneven bed again!
 
-Note: By default, this firmware probes 25 points. This might take little while, if you don't need an as precise mesh, you can change the grid size by sending `G29 Px` before starting the leveling. E.g., `G29 P3` results in a 3x3 mesh, thus only 9 points.
+
+#### Manual commands for use with OctoPrint etc.:
+
+- `G29 S1` - Start MMBL
+- `G29 S2` - Next Mesh point
+- Raising Z: `G91`, `G1 Z0.02`, `G90` (one after another, not in one line)
+- Lowering Z: `G91`, `G1 Z-0.02`, `G90`
+- After seeing `ok` in the console, send `M500` to save.
+
 
 ### Testing your bed leveling
 
@@ -153,18 +193,20 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 
 ## Detailed changes:
 
-- Thermal runaway protection enabled
+- Thermal runaway protection enabled and tweaked
+- Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
+- Heatbed PID mode enabled
+- TMC2208 configured in standalone mode
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
 - Linear advance unlocked (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
 - S-Curve Acceleration enabled
 - G26 Mesh Validation enabled
 - Some redundant code removed to save memory
-- Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
-- Heatbed PID mode enabled
 - Minor tweaks on default jerk and acceleration
+- Printcounter enabled (`M78`)
 
 
-## Changes by derhopp:
+## Changes by [derhopp](https://github.com/derhopp/):
 
 - 12V capability on FAN0 (parts cooling fan) enabled
 - Buzzer disabled (e.g. startup beep)
