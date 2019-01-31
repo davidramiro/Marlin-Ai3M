@@ -49,7 +49,8 @@ I provided three different precompiled hex files: One for no modifications on th
 - Clone or download this repo
 - In the IDE, under `Tools -> Board` select `Genuino Mega 2560` and `ATmega2560`
 - Open Marlin.ino in the Marlin directory of this repo
-- Customize if needed and under `Sketch`, select `Export compiled binary`
+- Customize if needed (e.g. motor directiona and type at line `559` to `566` and line `857` to `865`)
+- Under `Sketch`, select `Export compiled binary`
 - Look for the .hex file in your temporary directory, e.g. `.../AppData/Local/Temp/arduino_build_xxx/` (only the `Marlin.ino.hex`, not the `Marlin.ino.with_bootloader.hex`!)
 
 ### After obtaining the hex file: 
