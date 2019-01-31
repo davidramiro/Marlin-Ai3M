@@ -36,9 +36,8 @@
 //
 // MOSFET changes
 //
-#define RAMPS_D9_PIN        8   // FAN (by default)
-#define RAMPS_D10_PIN       9   // EXTRUDER 1
-#define MOSFET_D_PIN       12   // EXTRUDER 2 or FAN
+#define RAMPS_D10_PIN       9 // EXTRUDER 1
+#define MOSFET_D_PIN       12 // EXTRUDER 2 or FAN
 
 #include "pins_RAMPS.h"
 
@@ -75,9 +74,9 @@
 // SPI for Max6675 or Max31855 Thermocouple
 #undef MAX6675_SS
 #if DISABLED(SDSUPPORT)
-  #define MAX6675_SS       53   // Don't use pin 53 if there is even the remote possibility of using Display/SD card
+  #define MAX6675_SS       53 // Don't use pin 53 if there is even the remote possibility of using Display/SD card
 #else
-  #define MAX6675_SS       49   // Don't use pin 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
+  #define MAX6675_SS       49 // Don't use pin 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
 #endif
 
 //
@@ -86,9 +85,8 @@
 #undef HEATER_BED_PIN
 #define HEATER_BED_PIN     10
 
-#ifndef FAN_PIN
-  #define FAN_PIN           8   // Same as RAMPS_13_EEF
-#endif
+#undef FAN_PIN
+#define FAN_PIN             8 // Same as RAMPS_13_EEF
 
 //
 // Misc. Functions

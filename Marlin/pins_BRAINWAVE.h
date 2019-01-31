@@ -115,9 +115,7 @@
 #define HEATER_0_PIN       32   // A4 Extruder
 #define HEATER_BED_PIN     18   // E6 Bed
 
-#ifndef FAN_PIN
-  #define FAN_PIN          31   // A3 Fan
-#endif
+#define FAN_PIN            31   // A3 Fan
 
 //
 // Misc. Functions

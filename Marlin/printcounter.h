@@ -23,40 +23,35 @@
 #ifndef PRINTCOUNTER_H
 #define PRINTCOUNTER_H
 
-// Print debug messages with M111 S2
-//#define DEBUG_PRINTCOUNTER
-
 #include "macros.h"
 #include "language.h"
 #include "stopwatch.h"
 #include <avr/eeprom.h>
 
-struct printStatistics {    // 16 bytes
+
+// Print debug messages with M111 S2
+//#define DEBUG_PRINTCOUNTER
+
+struct printStatistics {    // 16 bytes (20 with real doubles)
   //const uint8_t magic;    // Magic header, it will always be 0x16
   uint16_t totalPrints;     // Number of prints
   uint16_t finishedPrints;  // Number of complete prints
   uint32_t printTime;       // Accumulated printing time
   uint32_t longestPrint;    // Longest successful print job
-  float    filamentUsed;    // Accumulated filament consumed in mm
+  double   filamentUsed;    // Accumulated filament consumed in mm
 };
 
 class PrintCounter: public Stopwatch {
   private:
     typedef Stopwatch super;
 
-    #if ENABLED(I2C_EEPROM) || ENABLED(SPI_EEPROM)
-      typedef uint32_t promdress;
-    #else
-      typedef uint16_t promdress;
-    #endif
-
-    static printStatistics data;
+    printStatistics data;
 
     /**
      * @brief EEPROM address
      * @details Defines the start offset address where the data is stored.
      */
-    static const promdress address;
+    const uint16_t address = 0x32;
 
     /**
      * @brief Interval in seconds between counter updates
@@ -66,7 +61,7 @@ class PrintCounter: public Stopwatch {
      * @note The max value for this option is 60(s), otherwise integer
      * overflow will happen.
      */
-    static const uint16_t updateInterval;
+    const uint16_t updateInterval = 10;
 
     /**
      * @brief Interval in seconds between EEPROM saves
@@ -74,118 +69,107 @@ class PrintCounter: public Stopwatch {
      * EEPROM save cycle, the development team recommends to set this value
      * no lower than 3600 secs (1 hour).
      */
-    static const uint16_t saveInterval;
+    const uint16_t saveInterval = 3600;
 
     /**
      * @brief Timestamp of the last call to deltaDuration()
-     * @details Store the timestamp of the last deltaDuration(), this is
+     * @details Stores the timestamp of the last deltaDuration(), this is
      * required due to the updateInterval cycle.
      */
-    static millis_t lastDuration;
+    millis_t lastDuration;
 
     /**
-     * @brief Stats were loaded from EEPROM
+     * @brief Stats were loaded from EERPROM
      * @details If set to true it indicates if the statistical data was already
      * loaded from the EEPROM.
      */
-    static bool loaded;
+    bool loaded = false;
 
   protected:
     /**
      * @brief dT since the last call
-     * @details Return the elapsed time in seconds since the last call, this is
+     * @details Returns the elapsed time in seconds since the last call, this is
      * used internally for print statistics accounting is not intended to be a
      * user callable function.
      */
-    static millis_t deltaDuration();
+    millis_t deltaDuration();
 
   public:
-
     /**
-     * @brief Initialize the print counter
+     * @brief Class constructor
      */
-    static inline void init() {
-      super::init();
-      loadStats();
-    }
+    PrintCounter();
 
     /**
-     * @brief Check if Print Statistics has been loaded
-     * @details Return true if the statistical data has been loaded.
+     * @brief Checks if Print Statistics has been loaded
+     * @details Returns true if the statistical data has been loaded.
      * @return bool
      */
-    FORCE_INLINE static bool isLoaded() { return loaded; }
+    bool isLoaded();
 
     /**
-     * @brief Increment the total filament used
+     * @brief Increments the total filament used
      * @details The total filament used counter will be incremented by "amount".
      *
      * @param amount The amount of filament used in mm
      */
-    static void incFilamentUsed(float const &amount);
+    void incFilamentUsed(double const &amount);
 
     /**
-     * @brief Reset the Print Statistics
-     * @details Reset the statistics to zero and saves them to EEPROM creating
+     * @brief Resets the Print Statistics
+     * @details Resets the statistics to zero and saves them to EEPROM creating
      * also the magic header.
      */
-    static void initStats();
+    void initStats();
 
     /**
-     * @brief Load the Print Statistics
-     * @details Load the statistics from EEPROM
+     * @brief Loads the Print Statistics
+     * @details Loads the statistics from EEPROM
      */
-    static void loadStats();
+    void loadStats();
 
     /**
-     * @brief Save the Print Statistics
-     * @details Save the statistics to EEPROM
+     * @brief Saves the Print Statistics
+     * @details Saves the statistics to EEPROM
      */
-    static void saveStats();
+    void saveStats();
 
     /**
      * @brief Serial output the Print Statistics
      * @details This function may change in the future, for now it directly
      * prints the statistical data to serial.
      */
-    static void showStats();
+    void showStats();
 
     /**
      * @brief Return the currently loaded statistics
      * @details Return the raw data, in the same structure used internally
      */
-    static printStatistics getStats() { return data; }
+    printStatistics getStats() { return this->data; }
 
     /**
      * @brief Loop function
      * @details This function should be called at loop, it will take care of
      * periodically save the statistical data to EEPROM and do time keeping.
      */
-    static void tick();
+    void tick();
 
     /**
      * The following functions are being overridden
      */
-    static bool start();
-    static bool stop();
-    static void reset();
+    bool start();
+    bool stop();
+    void reset();
 
     #if ENABLED(DEBUG_PRINTCOUNTER)
 
       /**
-       * @brief Print a debug message
-       * @details Print a simple debug message
+       * @brief Prints a debug message
+       * @details Prints a simple debug message "PrintCounter::function"
        */
       static void debug(const char func[]);
 
     #endif
 };
-
-// Global Print Job Timer instance
-#if ENABLED(PRINTCOUNTER)
-  extern PrintCounter print_job_timer;
-#else
-  extern Stopwatch print_job_timer;
-#endif
 
 #endif // PRINTCOUNTER_H

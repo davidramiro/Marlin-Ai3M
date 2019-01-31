@@ -24,9 +24,6 @@
  * Melzi pin assignments
  */
 
-#ifndef BOARD_NAME
-  #define BOARD_NAME "Melzi"
-#endif
-
+#define BOARD_NAME "Melzi"
 #define IS_MELZI
 #include "pins_SANGUINOLOLU_12.h"

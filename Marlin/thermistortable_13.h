@@ -20,7 +20,7 @@
  *
  */
 
-// R25 = 100 kOhm, beta25 = 4100 K, 4.7 kOhm pull-up, Hisens thermistor
+// Hisens thermistor B25/50 =3950 +/-1%
 const short temptable_13[][2] PROGMEM = {
   { OV( 20.04), 300 },
   { OV( 23.19), 290 },

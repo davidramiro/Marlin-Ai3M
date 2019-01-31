@@ -43,7 +43,7 @@
 //
 // Servos
 //
-#define SERVO0_PIN         11
+#define SERVO0_PIN         13 // untested
 
 //
 // Limit Switches
@@ -99,9 +99,7 @@
 #define HEATER_1_PIN        3
 #define HEATER_BED_PIN      4
 
-#ifndef FAN_PIN
-  #define FAN_PIN           7
-#endif
+#define FAN_PIN             7
 
 //
 // Misc. Functions
@@ -159,6 +157,6 @@
 //
 // M3/M4/M5 - Spindle/Laser Control
 //
-#define SPINDLE_LASER_PWM_PIN     9   // MUST BE HARDWARE PWM
-#define SPINDLE_LASER_ENABLE_PIN 10   // Pin should have a pullup!
-#define SPINDLE_DIR_PIN          11   // use the EXP3 PWM header
+#define SPINDLE_LASER_PWM_PIN     9  // MUST BE HARDWARE PWM
+#define SPINDLE_LASER_ENABLE_PIN 10  // Pin should have a pullup!
+#define SPINDLE_DIR_PIN          11  // use the EXP3 PWM header

@@ -65,9 +65,7 @@ char* itostr3(const int x) {
   return &_conv[4];
 }
 
-
 // Convert signed float to fixed-length string with 023.45 / -23.45 format
-
 char *ftostr32(const float &x) {
   long xx = x * 100;
   _conv[1] = MINUSOR(xx, DIGIMOD(xx, 10000));
@@ -78,7 +76,6 @@ char *ftostr32(const float &x) {
   _conv[6] = DIGIMOD(xx, 1);
   return &_conv[1];
 }
-
 #endif
 
 AnycubicTFTClass::AnycubicTFTClass() {
@@ -142,16 +139,12 @@ void AnycubicTFTClass::StartPrint(){
 #endif
   }
   starttime=millis();
-#ifdef SDSUPPORT
   card.startFileprint();
-#endif
   TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
 }
 
 void AnycubicTFTClass::PausePrint(){
-#ifdef SDSUPPORT
   card.pauseSDPrint();
-#endif
   TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
 #ifdef ANYCUBIC_FILAMENT_RUNOUT_SENSOR  
   if(FilamentTestStatus) {
@@ -172,9 +165,7 @@ void AnycubicTFTClass::PausePrint(){
 }
 
 void AnycubicTFTClass::StopPrint(){
-#ifdef SDSUPPORT
   card.stopSDPrint();
-#endif
   clear_command_queue();
   quickstop_stepper();
   print_job_timer.stop();
@@ -280,7 +271,6 @@ void AnycubicTFTClass::Ls()
         break;
     }
   }
-#ifdef SDSUPPORT  
   else if(card.cardOK)
   {
     uint16_t cnt=filenumber;
@@ -329,9 +319,7 @@ void AnycubicTFTClass::Ls()
         }
       }
     }
-  } 
-#endif    
-  else {
+  } else {
     ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Special_Menu>");
     ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Special_Menu>");
   }
@@ -339,10 +327,9 @@ void AnycubicTFTClass::Ls()
 
 void AnycubicTFTClass::CheckSDCardChange()
 {
-#ifdef SDSUPPORT
-  if (LastSDstatus != IS_SD_INSERTED())
+  if (LastSDstatus != IS_SD_INSERTED)
   {
-    LastSDstatus = IS_SD_INSERTED();
+    LastSDstatus = IS_SD_INSERTED;
     
     if (LastSDstatus)
     {
@@ -363,7 +350,6 @@ void AnycubicTFTClass::CheckSDCardChange()
 
     }
   }
-#endif  
 }
 
 void AnycubicTFTClass::CheckHeaterError()
@@ -395,17 +381,14 @@ void AnycubicTFTClass::StateHandler()
 {
   switch (TFTstate) {
   case ANYCUBIC_TFT_STATE_IDLE:
-#ifdef SDSUPPORT
     if(card.sdprinting){
       TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
       starttime=millis();
 
       // --> Send print info to display... most probably print started via gcode
     }
-#endif    
     break;
   case ANYCUBIC_TFT_STATE_SDPRINT:
-#ifdef SDSUPPORT  
       if(!card.sdprinting){
         // It seems that we are to printing anymore... pause or stopped?
         if (card.isFileOpen()){
@@ -421,7 +404,6 @@ void AnycubicTFTClass::StateHandler()
 #endif
         }
       }
-#endif      
       break;
   case ANYCUBIC_TFT_STATE_SDPAUSE:
     break;
@@ -434,7 +416,6 @@ void AnycubicTFTClass::StateHandler()
 #endif
     break;
   case ANYCUBIC_TFT_STATE_SDPAUSE_REQ:
-#ifdef SDSUPPORT  
     if((!card.sdprinting) && (!planner.movesplanned())){
       // We have to wait until the sd card printing has been settled
 #ifndef ADVANCED_PAUSE_FEATURE
@@ -453,11 +434,10 @@ void AnycubicTFTClass::StateHandler()
 #ifdef ANYCUBIC_TFT_DEBUG
       SERIAL_ECHOLNPGM("TFT Serial Debug: SD print paused done... J18");
 #endif
+      
     }
-#endif    
     break;
   case ANYCUBIC_TFT_STATE_SDSTOP_REQ:
-#ifdef SDSUPPORT  
     if((!card.sdprinting) && (!planner.movesplanned())){
       ANYCUBIC_SERIAL_PROTOCOLPGM("J16");// J16 stop print
       ANYCUBIC_SERIAL_ENTER();
@@ -465,22 +445,25 @@ void AnycubicTFTClass::StateHandler()
 #ifdef ANYCUBIC_TFT_DEBUG
       SERIAL_ECHOLNPGM("TFT Serial Debug: SD print stopped... J16");
 #endif
-      if((current_position[Z_AXIS]>200)){
+      if((current_position[Z_AXIS]>=200)){
         enqueue_and_echo_commands_P(PSTR("G91"));
         enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
         enqueue_and_echo_commands_P(PSTR("G90"));
+      } else if ((current_position[Z_AXIS]<200)){
+        enqueue_and_echo_commands_P(PSTR("G91"));
+        enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
+        enqueue_and_echo_commands_P(PSTR("G90"));
       } else if ((current_position[Z_AXIS]<190)){
         enqueue_and_echo_commands_P(PSTR("G91"));
-        enqueue_and_echo_commands_P(PSTR("G1 Z15 F240"));
+        enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
         enqueue_and_echo_commands_P(PSTR("G90"));
       } else if ((current_position[Z_AXIS]<150)){
         enqueue_and_echo_commands_P(PSTR("G91"));
-        enqueue_and_echo_commands_P(PSTR("G1 Z50 F240"));
+        enqueue_and_echo_commands_P(PSTR("G1 Z35 F240"));
         enqueue_and_echo_commands_P(PSTR("G90"));
       }
       enqueue_and_echo_commands_P(PSTR("M84"));
     }
-#endif    
     break;
   default:
     break;
@@ -498,22 +481,18 @@ void AnycubicTFTClass::FilamentRunout()
     if(FilamentRunoutCounter>=15800)
     {
       FilamentRunoutCounter=0;
-#ifdef SDSUPPORT      
       if((card.sdprinting==true))
       {
         PausePrint();
       }
       else if((card.sdprinting==false))
       {
-#endif
         ANYCUBIC_SERIAL_PROTOCOLPGM("J15"); //J15 FILAMENT LACK
         ANYCUBIC_SERIAL_ENTER();
 #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("TFT Serial Debug: Filament runout... J15");
 #endif
-#ifdef SDSUPPORT
       }
-#endif      
       FilamentTestLastStatus=FilamentTestStatus;
     }
   }
@@ -608,7 +587,6 @@ void AnycubicTFTClass::GetCommandFromTFT()
             ANYCUBIC_SERIAL_ENTER();
             break;
           case 6: //A6 GET SD CARD PRINTING STATUS
-#ifdef SDSUPPORT          
             if(card.sdprinting){
               ANYCUBIC_SERIAL_PROTOCOLPGM("A6V ");
               if(card.cardOK)
@@ -623,7 +601,6 @@ void AnycubicTFTClass::GetCommandFromTFT()
             else
               ANYCUBIC_SERIAL_PROTOCOLPGM("A6V ---");
             ANYCUBIC_SERIAL_ENTER();
-#endif            
             break;
           case 7://A7 GET PRINTING TIME
           {
@@ -647,9 +624,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
             break;
           }
           case 8: // A8 GET  SD LIST
-#ifdef SDSUPPORT          
             SelectedDirectory[0]=0;
-            if(!IS_SD_INSERTED())
+            if(!IS_SD_INSERTED)
             {
               ANYCUBIC_SERIAL_PROTOCOLPGM("J02");
               ANYCUBIC_SERIAL_ENTER();
@@ -665,10 +641,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
               ANYCUBIC_SERIAL_PROTOCOLPGM("END"); // Filelist stop
               ANYCUBIC_SERIAL_ENTER();
             }
-#endif            
             break;
           case 9: // A9 pause sd print
-#ifdef SDSUPPORT          
             if(card.sdprinting)
             {
               PausePrint();
@@ -677,10 +651,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
             {
               StopPrint();
             }
-#endif
             break;
           case 10: // A10 resume sd print
-#ifdef SDSUPPORT          
             if((TFTstate==ANYCUBIC_TFT_STATE_SDPAUSE) || (TFTstate==ANYCUBIC_TFT_STATE_SDOUTAGE))
             {
               StartPrint();
@@ -690,21 +662,17 @@ void AnycubicTFTClass::GetCommandFromTFT()
               SERIAL_ECHOLNPGM("TFT Serial Debug: SD print started... J04");
 #endif
             }
-#endif            
             break;
           case 11: // A11 STOP SD PRINT
-#ifdef SDSUPPORT          
             if((card.sdprinting) || (TFTstate==ANYCUBIC_TFT_STATE_SDOUTAGE))
             {
               StopPrint();
             }
-#endif            
             break;
           case 12: // A12 kill
             kill(PSTR(MSG_KILLED));
             break;
           case 13: // A13 SELECTION FILE
-#ifdef SDSUPPORT                    
             if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
             {
               starpos = (strchr(TFTstrchr_pointer + 4,'*'));
@@ -734,10 +702,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
               }
               ANYCUBIC_SERIAL_ENTER();
             }
-#endif            
             break;
           case 14: // A14 START PRINTING
-#ifdef SDSUPPORT                    
             if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE) && (card.isFileOpen()))
             {
               StartPrint();
@@ -747,7 +713,6 @@ void AnycubicTFTClass::GetCommandFromTFT()
               SERIAL_ECHOLNPGM("TFT Serial Debug: Starting SD Print... J04");
 #endif
             }
-#endif            
             break;
           case 15: // A15 RESUMING FROM OUTAGE
             //                    			if((!planner.movesplanned())&&(!TFTresumingflag))
@@ -800,11 +765,7 @@ void AnycubicTFTClass::GetCommandFromTFT()
             ANYCUBIC_SERIAL_ENTER();
             break;
           case 19: // A19 stop stepper drivers
-            if((!planner.movesplanned())
-#ifdef SDSUPPORT          
-        	&&(!card.sdprinting)
-#endif        	
-            )
+            if((!planner.movesplanned())&&(!card.sdprinting))
             {
               quickstop_stepper();
               disable_X();
@@ -918,7 +879,6 @@ void AnycubicTFTClass::GetCommandFromTFT()
             }
             break;
           case 26: // A26 refresh SD
-#ifdef SDSUPPORT          
             if (SelectedDirectory[0]==0) {
               card.initsd();
             } else {
@@ -935,7 +895,7 @@ void AnycubicTFTClass::GetCommandFromTFT()
 
             SelectedDirectory[0]=0;
             
-            if(!IS_SD_INSERTED())
+            if(!IS_SD_INSERTED)
             {
               ANYCUBIC_SERIAL_PROTOCOLPGM("J02"); // J02 SD Card initilized
               ANYCUBIC_SERIAL_ENTER();
@@ -943,7 +903,6 @@ void AnycubicTFTClass::GetCommandFromTFT()
               SERIAL_ECHOLNPGM("TFT Serial Debug: SD card initialized... J02");
 #endif
             }
-#endif            
             break;
 #ifdef SERVO_ENDSTOPS
           case 27: // A27 servos angles  adjust

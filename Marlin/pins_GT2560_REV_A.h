@@ -81,9 +81,7 @@
 #define HEATER_0_PIN        2
 #define HEATER_1_PIN        3
 #define HEATER_BED_PIN      4
-#ifndef FAN_PIN
-  #define FAN_PIN           7
-#endif
+#define FAN_PIN             7
 
 //
 // Misc. Functions
@@ -92,7 +90,7 @@
 #define SDSS               53
 #define LED_PIN            13
 #define PS_ON_PIN          12
-#define SUICIDE_PIN        54   // Must be enabled at startup to keep power flowing
+#define SUICIDE_PIN        54  // Must be enabled at startup to keep power flowing
 #define KILL_PIN           -1
 
 #if ENABLED(ULTRA_LCD)

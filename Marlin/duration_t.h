@@ -23,9 +23,6 @@
 #ifndef __DURATION_T__
 #define __DURATION_T__
 
-#include <stdio.h>
-#include <inttypes.h>
-
 struct duration_t {
   /**
    * @brief Duration is stored in seconds
@@ -154,10 +151,10 @@ struct duration_t {
     if (with_days) {
       uint16_t d = this->day();
       sprintf_P(buffer, PSTR("%ud %02u:%02u"), d, h % 24, m);
-      return d >= 10 ? 9 : 8;
+      return d >= 10 ? 8 : 7;
     }
     else if (h < 100) {
-      sprintf_P(buffer, PSTR("%02u:%02u"), h, m);
+      sprintf_P(buffer, PSTR("%02u:%02u"), h % 24, m);
       return 5;
     }
     else {

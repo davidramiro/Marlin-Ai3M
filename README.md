@@ -1,4 +1,4 @@
-# Anycubic i3 Mega Marlin 1.1.9 by davidramiro
+# Anycubic i3 Mega Marlin 1.1.8 by davidramiro
 
 This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic i3 Mega TFT screen to work.
 
@@ -202,7 +202,6 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - TMC2208 configured in standalone mode
 - Stepper orientation flipped (you don't have to flip the connectors on the board anymore)
 - Linear advance unlocked (Off by default. [Research, calibrate](http://marlinfw.org/docs/features/lin_advance.html) and then enable with `M900 Kx`)
-- S-Curve Acceleration enabled
 - G26 Mesh Validation enabled
 - Some redundant code removed to save memory
 - Minor tweaks on default jerk and acceleration
