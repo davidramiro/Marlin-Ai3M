@@ -32,7 +32,7 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
 - No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
-- M600 filament change feature enabled
+- Filament change feature enabled: Switch colors/material mid print with `M600` (instructions below)
 
 ## How to flash this?
 
@@ -241,7 +241,7 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - Some redundant code removed to save memory
 - Minor tweaks on default jerk and acceleration
 - Printcounter enabled (`M78`)
-- M600 filament change feature enabled
+- `M600` filament change feature enabled
 
 
 ## Changes by [derhopp](https://github.com/derhopp/):
