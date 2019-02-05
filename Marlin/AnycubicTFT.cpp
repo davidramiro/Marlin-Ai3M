@@ -234,6 +234,12 @@ void AnycubicTFTClass::HandleSpecialMenu()
         } else if (strcmp(SelectedDirectory, "<z down 0.1>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.1");
                 enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.1\nG90"));
+        } else if (strcmp(SelectedDirectory, "<m600 pause>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: M600 Pause");
+                enqueue_and_echo_commands_P(PSTR("M600"));
+        } else if (strcmp(SelectedDirectory, "<m108 resume>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: M108 Resume");
+                enqueue_and_echo_commands_P(PSTR("M108"));
         } else if (strcmp(SelectedDirectory, "<exit>")==0) {
                 SpecialMenu=false;
         }
@@ -274,6 +280,13 @@ void AnycubicTFTClass::Ls()
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
+                        break;
+
+                case 12: // Fourth Page
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M600 Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M600 Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M108 Resume>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M108 Resume>");
                         break;
 
                 default:

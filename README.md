@@ -32,6 +32,7 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
 - No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
+- M600 filament change feature enabled
 
 ## How to flash this?
 
@@ -182,6 +183,35 @@ Note: These commands are tweaked for PLA printing at up to 210/60 °C. If you ru
 
 **Reminder**: PID tuning sometimes fails. If you get fluctuating temperatures or the heater even fails to reach your desired temperature after tuning, you can always go back to the stock settings by sending `M301 P15.94 I1.17 D54.19` and save with `M500`.
 
+## M600 Filament Change
+
+**A USB host (OctoPrint, Pronterface, ...) is required to use this.**
+
+#### Configuration:
+- Send `M603 L0 U0` to use manual loading & unloading. (Recommended)
+- Send `M603 L500 U500` to use automatic loading & unloading
+- Save with `M500`
+
+#### Filament change process (manual loading):
+- Place `M600` in your GCode at the desired layer or send it manually
+- The nozzle will park and your printer will beep
+- Remove the filament from the bowden tube
+- Insert the new filament right up to the nozzle, just until a bit of plastic oozes out
+- Remove the excess filament from the nozzle with tweezers
+- Send `M108` via your USB host.
+- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+
+#### Filament change process (automatic loading):
+- Place `M600` in your GCode at the desired layer or send it manually
+- The nozzle will park
+- The printer will remove the filament right up to the extruder and beep when finished
+- Insert the new filament just until where the bowden tube begins
+- Send `M108` via your USB host.
+- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+- The printer will now pull in the new filament, watch out since it might ooze quite a bit from the nozzle
+- Remove the excess filament from the nozzle with tweezers
+
+
 ## Updating
 
 ### Back up & restore your settings
@@ -211,6 +241,7 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - Some redundant code removed to save memory
 - Minor tweaks on default jerk and acceleration
 - Printcounter enabled (`M78`)
+- M600 filament change feature enabled
 
 
 ## Changes by [derhopp](https://github.com/derhopp/):
