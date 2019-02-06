@@ -184,11 +184,15 @@ Note: These commands are tweaked for PLA printing at up to 210/60 °C. If you ru
 
 ## M600 Filament Change
 
+![M600 Demo][m600 demo]
+
+[m600 demo]: https://kore.cc/i3mega/img/m600demo.jpg "M600 demo"
+
 **A USB host (OctoPrint, Pronterface, ...) is required to use this.**
 
 #### Configuration:
-- Send `M603 L0 U0` to use manual loading & unloading. (Recommended)
-- Send `M603 L500 U500` to use automatic loading & unloading
+- Send `M603 L0 U0` to use manual loading & unloading.
+- Send `M603 L530 U555` to use automatic loading & unloading
 - Save with `M500`
 
 #### Filament change process (manual loading):
@@ -204,7 +208,12 @@ Note: These commands are tweaked for PLA printing at up to 210/60 °C. If you ru
 - Place `M600` in your GCode at the desired layer or send it manually
 - The nozzle will park
 - The printer will remove the filament right up to the extruder and beep when finished
-- Insert the new filament just until where the bowden tube begins
+- Insert the new filament just up to the end of the bowden fitting, as shown here:
+
+![Load Filament][m600 load]
+
+[m600 load]: https://kore.cc/i3mega/img/load.jpg "M600 Load"
+
 - Send `M108` via your USB host.
 - Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
 - The printer will now pull in the new filament, watch out since it might ooze quite a bit from the nozzle
