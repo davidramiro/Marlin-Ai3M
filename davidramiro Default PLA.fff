@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<profile name="davidramiro Default PLA" version="2019-01-06 16:40:07" app="S3D-Software 4.1.1">
+<profile name="davidramiro Default PLA" version="2019-02-06 18:17:40" app="S3D-Software 4.1.1">
   <baseProfile>Anycubic i3 Mega</baseProfile>
   <printMaterial>PLA</printMaterial>
   <printQuality>Medium</printQuality>
@@ -9,7 +9,7 @@
     <diameter>0.4</diameter>
     <autoWidth>0</autoWidth>
     <width>0.4</width>
-    <extrusionMultiplier>1</extrusionMultiplier>
+    <extrusionMultiplier>0.96</extrusionMultiplier>
     <useRetract>1</useRetract>
     <retractionDistance>6.5</retractionDistance>
     <extraRestartDistance>-0.1</extraRestartDistance>
@@ -40,7 +40,7 @@
   <raftBaseLayers>1</raftBaseLayers>
   <raftOffset>2</raftOffset>
   <raftSeparationDistance>0.2</raftSeparationDistance>
-  <raftTopInfill>100</raftTopInfill>
+  <raftTopInfill>50</raftTopInfill>
   <aboveRaftSpeedMultiplier>0.3</aboveRaftSpeedMultiplier>
   <useSkirt>1</useSkirt>
   <skirtExtruder>0</skirtExtruder>
@@ -61,7 +61,7 @@
   <oozeShieldSpeedMultiplier>1</oozeShieldSpeedMultiplier>
   <infillExtruder>0</infillExtruder>
   <internalInfillPattern>Fast Honeycomb</internalInfillPattern>
-  <externalInfillPattern>Concentric</externalInfillPattern>
+  <externalInfillPattern>Rectilinear</externalInfillPattern>
   <infillPercentage>15</infillPercentage>
   <outlineOverlapPercentage>20</outlineOverlapPercentage>
   <infillExtrusionWidthPercentage>100</infillExtrusionWidthPercentage>
@@ -70,7 +70,7 @@
   <internalInfillAngles>0</internalInfillAngles>
   <overlapInternalInfillAngles>0</overlapInternalInfillAngles>
   <externalInfillAngles>45,-45</externalInfillAngles>
-  <generateSupport>1</generateSupport>
+  <generateSupport>0</generateSupport>
   <supportExtruder>0</supportExtruder>
   <supportInfillPercentage>25</supportInfillPercentage>
   <supportExtraInflation>0.2</supportExtraInflation>
@@ -91,7 +91,6 @@
     <isHeatedBed>0</isHeatedBed>
     <stabilizeAtStartup>1</stabilizeAtStartup>
     <setpoint layer="1" temperature="200"/>
-    <setpoint layer="2" temperature="195"/>
   </temperatureController>
   <temperatureController name="Heated Bed">
     <temperatureNumber>0</temperatureNumber>
@@ -146,7 +145,7 @@
   <baudRateOverride>250000</baudRateOverride>
   <overridePrinterModels>1</overridePrinterModels>
   <printerModelsOverride></printerModelsOverride>
-  <startingGcode>G28 X0 Y0,G28 Z0,M501 ; read EEPROM for MMBL,M420 S1 ; enable MMBL,G91,G1 X5.0 Y5.0 F7200 ; nozzle clean position,G1 Z0.1 ; lower nozzle,G1 X5.0 F7200 ; clean nozzle,G1 Z0.2 ; raise nozzle,G1 Y150 E20 F600 ; prime nozzle,G90,G1 Z15 F1000,M107 ; fan off</startingGcode>
+  <startingGcode>G28 X0 Y0,G28 Z0,M501 ; read EEPROM to get Mesh data,M420 S1 ; enable MMBL,G91,G1 X5.0 Y5.0 F7200 ; nozzle clean position,G1 Z0.1 ; raise nozzle,G1 X5.0 F7200 ; wipe excess filament at the corner,G1 Z0.2 ; raise nozzle further,G1 Y150 E20 F600 ; prime nozzle,G90,G1 Z15 F1000 ; purge 15mm of filament,M107 ; fan off,  </startingGcode>
   <layerChangeGcode></layerChangeGcode>
   <retractionGcode></retractionGcode>
   <toolChangeGcode></toolChangeGcode>
@@ -156,8 +155,8 @@
   <celebrationSong>Star Wars</celebrationSong>
   <postProcessing></postProcessing>
   <defaultSpeed>3600</defaultSpeed>
-  <outlineUnderspeed>0.8</outlineUnderspeed>
-  <solidInfillUnderspeed>0.8</solidInfillUnderspeed>
+  <outlineUnderspeed>0.75</outlineUnderspeed>
+  <solidInfillUnderspeed>0.75</solidInfillUnderspeed>
   <supportUnderspeed>0.8</supportUnderspeed>
   <rapidXYspeed>4800</rapidXYspeed>
   <rapidZspeed>900</rapidZspeed>
@@ -204,7 +203,6 @@
       <isHeatedBed>0</isHeatedBed>
       <stabilizeAtStartup>1</stabilizeAtStartup>
       <setpoint layer="1" temperature="200"/>
-      <setpoint layer="2" temperature="195"/>
     </temperatureController>
     <temperatureController name="Heated Bed">
       <temperatureNumber>0</temperatureNumber>
@@ -212,7 +210,7 @@
       <stabilizeAtStartup>1</stabilizeAtStartup>
       <setpoint layer="1" temperature="60"/>
     </temperatureController>
-    <globalExtrusionMultiplier>1</globalExtrusionMultiplier>
+    <globalExtrusionMultiplier>0.96</globalExtrusionMultiplier>
     <fanSpeed>
       <setpoint layer="1" speed="0"/>
       <setpoint layer="2" speed="30"/>
