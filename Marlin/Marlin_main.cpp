@@ -8551,6 +8551,10 @@ inline void gcode_M109() {
   #if DISABLED(BUSY_WHILE_HEATING)
     KEEPALIVE_STATE(IN_HANDLER);
   #endif
+  
+  // flush the serial buffer after heating to prevent lockup by m105
+  flush_and_request_resend();
+
 }
 
 #if HAS_HEATED_BED
