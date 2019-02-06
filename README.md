@@ -165,7 +165,6 @@ G26 C H200 P25 R25
 - Put in the new value like this: `M92 X80.00 Y80.00 Z400.00 Exxx.xx`, replacing `x` with your value
 - Save with `M500`
 - Finish with `M82`
-
 - You can repeat the process if you want to get even more precise, you'd have to replace 92.6 with your newly calibrated value in the next calculation.
 
 ### PID tuning

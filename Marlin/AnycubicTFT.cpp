@@ -478,21 +478,21 @@ void AnycubicTFTClass::StateHandler()
 #ifdef ANYCUBIC_TFT_DEBUG
                         SERIAL_ECHOLNPGM("TFT Serial Debug: SD print stopped... J16");
 #endif
-                        if((current_position[Z_AXIS]>=200)) {
+                        if((current_position[Z_AXIS]<150)) {
                                 enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
-                                enqueue_and_echo_commands_P(PSTR("G90"));
-                        } else if ((current_position[Z_AXIS]<200)) {
-                                enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
+                                enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
                                 enqueue_and_echo_commands_P(PSTR("G90"));
                         } else if ((current_position[Z_AXIS]<190)) {
                                 enqueue_and_echo_commands_P(PSTR("G91"));
                                 enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
                                 enqueue_and_echo_commands_P(PSTR("G90"));
-                        } else if ((current_position[Z_AXIS]<150)) {
+                        } else if ((current_position[Z_AXIS]<200)) {
                                 enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z35 F240"));
+                                enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
+                                enqueue_and_echo_commands_P(PSTR("G90"));
+                        } else if ((current_position[Z_AXIS]>=200)) {
+                                enqueue_and_echo_commands_P(PSTR("G91"));
+                                enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
                                 enqueue_and_echo_commands_P(PSTR("G90"));
                         }
                         enqueue_and_echo_commands_P(PSTR("M84"));
