@@ -7,6 +7,17 @@ assignees: ''
 
 ---
 
+<!--
+
+Before posting a bug report, make sure to thoroughly read the readme and Wiki. 
+https://github.com/davidramiro/Marlin-AI3M/wiki/
+
+I am happy to help everyone as much as I can, but make sure your bug report is only applicable to this specific firmware.
+Example of a valid bug report: "M600 filament change is not working as expected."
+Example of an invalid request: "I am powering my printer with a hamster wheel generator. It's not working properly. Fix pls."
+
+-->
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -24,7 +35,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add photos or console outputs to help explain your problem.
 
 **Printer (please complete the following information):**
- - Firmware: [e.g. 181227]
+ - Firmware version: [e.g. v19.02.08]
  - Printing method [e.g. SD, USB (OctoPrint, Cura, ...)]
  - Model [e.g. i3 Mega, Mega-S]
 
