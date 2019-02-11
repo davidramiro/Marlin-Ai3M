@@ -238,8 +238,8 @@ void AnycubicTFTClass::Ls()
                 case 0: // First Page
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Auto Bed Leveling>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Auto Bed Leveling>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
 						ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
