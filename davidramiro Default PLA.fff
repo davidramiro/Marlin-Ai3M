@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<profile name="davidramiro Default PLA" version="2019-02-06 18:17:40" app="S3D-Software 4.1.1">
+<profile name="davidramiro Default PLA" version="2019-02-14 17:40:50" app="S3D-Software 4.1.1">
   <baseProfile>Anycubic i3 Mega</baseProfile>
   <printMaterial>PLA</printMaterial>
-  <printQuality>Medium</printQuality>
+  <printQuality>Default - Balanced</printQuality>
   <printExtruders></printExtruders>
   <extruder name="Primary Extruder">
     <toolheadNumber>0</toolheadNumber>
@@ -24,23 +24,23 @@
   <layerHeight>0.16</layerHeight>
   <topSolidLayers>4</topSolidLayers>
   <bottomSolidLayers>3</bottomSolidLayers>
-  <perimeterOutlines>3</perimeterOutlines>
+  <perimeterOutlines>5</perimeterOutlines>
   <printPerimetersInsideOut>1</printPerimetersInsideOut>
   <startPointOption>3</startPointOption>
   <startPointOriginX>0</startPointOriginX>
   <startPointOriginY>220</startPointOriginY>
   <sequentialIslands>0</sequentialIslands>
   <spiralVaseMode>0</spiralVaseMode>
-  <firstLayerHeightPercentage>130</firstLayerHeightPercentage>
-  <firstLayerWidthPercentage>100</firstLayerWidthPercentage>
+  <firstLayerHeightPercentage>95</firstLayerHeightPercentage>
+  <firstLayerWidthPercentage>130</firstLayerWidthPercentage>
   <firstLayerUnderspeed>0.3</firstLayerUnderspeed>
   <useRaft>0</useRaft>
   <raftExtruder>0</raftExtruder>
-  <raftTopLayers>1</raftTopLayers>
-  <raftBaseLayers>1</raftBaseLayers>
-  <raftOffset>2</raftOffset>
-  <raftSeparationDistance>0.2</raftSeparationDistance>
-  <raftTopInfill>50</raftTopInfill>
+  <raftTopLayers>2</raftTopLayers>
+  <raftBaseLayers>2</raftBaseLayers>
+  <raftOffset>3</raftOffset>
+  <raftSeparationDistance>0.14</raftSeparationDistance>
+  <raftTopInfill>100</raftTopInfill>
   <aboveRaftSpeedMultiplier>0.3</aboveRaftSpeedMultiplier>
   <useSkirt>1</useSkirt>
   <skirtExtruder>0</skirtExtruder>
@@ -72,18 +72,18 @@
   <externalInfillAngles>45,-45</externalInfillAngles>
   <generateSupport>0</generateSupport>
   <supportExtruder>0</supportExtruder>
-  <supportInfillPercentage>25</supportInfillPercentage>
+  <supportInfillPercentage>60</supportInfillPercentage>
   <supportExtraInflation>0.2</supportExtraInflation>
   <supportBaseLayers>0</supportBaseLayers>
   <denseSupportExtruder>0</denseSupportExtruder>
   <denseSupportLayers>0</denseSupportLayers>
-  <denseSupportInfillPercentage>25</denseSupportInfillPercentage>
+  <denseSupportInfillPercentage>60</denseSupportInfillPercentage>
   <supportLayerInterval>1</supportLayerInterval>
   <supportHorizontalPartOffset>0.3</supportHorizontalPartOffset>
   <supportUpperSeparationLayers>1</supportUpperSeparationLayers>
   <supportLowerSeparationLayers>1</supportLowerSeparationLayers>
   <supportType>0</supportType>
-  <supportGridSpacing>4</supportGridSpacing>
+  <supportGridSpacing>2</supportGridSpacing>
   <maxOverhangAngle>50</maxOverhangAngle>
   <supportAngles>0</supportAngles>
   <temperatureController name="Primary Extruder">
@@ -101,13 +101,13 @@
   <fanSpeed>
     <setpoint layer="1" speed="0"/>
     <setpoint layer="2" speed="30"/>
-    <setpoint layer="3" speed="40"/>
-    <setpoint layer="4" speed="50"/>
-    <setpoint layer="5" speed="60"/>
+    <setpoint layer="4" speed="42"/>
+    <setpoint layer="5" speed="50"/>
+    <setpoint layer="6" speed="65"/>
   </fanSpeed>
   <blipFanToFullPower>0</blipFanToFullPower>
   <adjustSpeedForCooling>1</adjustSpeedForCooling>
-  <minSpeedLayerTime>15</minSpeedLayerTime>
+  <minSpeedLayerTime>20</minSpeedLayerTime>
   <minCoolingSpeedSlowdown>30</minCoolingSpeedSlowdown>
   <increaseFanForCooling>0</increaseFanForCooling>
   <minFanLayerTime>45</minFanLayerTime>
@@ -126,8 +126,8 @@
   <gcodeZoffset>0</gcodeZoffset>
   <overrideMachineDefinition>1</overrideMachineDefinition>
   <machineTypeOverride>0</machineTypeOverride>
-  <strokeXoverride>210</strokeXoverride>
-  <strokeYoverride>210</strokeYoverride>
+  <strokeXoverride>215</strokeXoverride>
+  <strokeYoverride>215</strokeYoverride>
   <strokeZoverride>205</strokeZoverride>
   <originOffsetXoverride>0</originOffsetXoverride>
   <originOffsetYoverride>0</originOffsetYoverride>
@@ -154,7 +154,7 @@
   <celebration>0</celebration>
   <celebrationSong>Star Wars</celebrationSong>
   <postProcessing></postProcessing>
-  <defaultSpeed>3600</defaultSpeed>
+  <defaultSpeed>3300</defaultSpeed>
   <outlineUnderspeed>0.75</outlineUnderspeed>
   <solidInfillUnderspeed>0.75</solidInfillUnderspeed>
   <supportUnderspeed>0.8</supportUnderspeed>
@@ -214,33 +214,49 @@
     <fanSpeed>
       <setpoint layer="1" speed="0"/>
       <setpoint layer="2" speed="30"/>
-      <setpoint layer="3" speed="40"/>
-      <setpoint layer="4" speed="50"/>
-      <setpoint layer="5" speed="60"/>
+      <setpoint layer="4" speed="42"/>
+      <setpoint layer="5" speed="50"/>
+      <setpoint layer="6" speed="65"/>
     </fanSpeed>
   </autoConfigureMaterial>
-  <autoConfigureQuality name="Fast">
-    <layerHeight>0.2</layerHeight>
-    <topSolidLayers>2</topSolidLayers>
-    <bottomSolidLayers>2</bottomSolidLayers>
+  <autoConfigureQuality name="Extreme Quality">
+    <layerHeight>0.08</layerHeight>
+    <topSolidLayers>6</topSolidLayers>
+    <bottomSolidLayers>6</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
-    <infillPercentage>5</infillPercentage>
-    <supportInfillPercentage>25</supportInfillPercentage>
+    <infillPercentage>50</infillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
   </autoConfigureQuality>
-  <autoConfigureQuality name="Medium">
+  <autoConfigureQuality name="High Quality">
+    <layerHeight>0.1</layerHeight>
+    <topSolidLayers>5</topSolidLayers>
+    <bottomSolidLayers>4</bottomSolidLayers>
+    <skirtLayers>1</skirtLayers>
+    <infillPercentage>25</infillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
+  </autoConfigureQuality>
+  <autoConfigureQuality name="Default - Balanced">
     <layerHeight>0.16</layerHeight>
     <topSolidLayers>4</topSolidLayers>
     <bottomSolidLayers>3</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
     <infillPercentage>15</infillPercentage>
-    <supportInfillPercentage>25</supportInfillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
   </autoConfigureQuality>
-  <autoConfigureQuality name="High">
-    <layerHeight>0.08</layerHeight>
-    <topSolidLayers>5</topSolidLayers>
-    <bottomSolidLayers>5</bottomSolidLayers>
+  <autoConfigureQuality name="Fast">
+    <layerHeight>0.2</layerHeight>
+    <topSolidLayers>3</topSolidLayers>
+    <bottomSolidLayers>2</bottomSolidLayers>
     <skirtLayers>1</skirtLayers>
-    <infillPercentage>35</infillPercentage>
-    <supportInfillPercentage>25</supportInfillPercentage>
+    <infillPercentage>10</infillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
+  </autoConfigureQuality>
+  <autoConfigureQuality name="Very Fast (Draft)">
+    <layerHeight>0.26</layerHeight>
+    <topSolidLayers>2</topSolidLayers>
+    <bottomSolidLayers>2</bottomSolidLayers>
+    <skirtLayers>1</skirtLayers>
+    <infillPercentage>5</infillPercentage>
+    <supportInfillPercentage>60</supportInfillPercentage>
   </autoConfigureQuality>
 </profile>
