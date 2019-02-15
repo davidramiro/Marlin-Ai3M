@@ -146,11 +146,11 @@ void AnycubicTFTClass::StartPrint(){
         }
         starttime=millis();
 #ifdef SDSUPPORT
-        if((PausedByRunout==false)) // was that a regular pause?
+        if((PausedByRunout==false) && (PausedByFilamentChange==false)) // was that a regular pause?
         {
                 card.startFileprint(); // start or resume regularly
         }
-        else // resuming from a pause that was caused by filament runout
+        else if((PausedByRunout==true) && (PausedByFilamentChange==false)) // resuming from a pause that was caused by filament runout
         {
                 enqueue_and_echo_commands_P(PSTR("M24")); // unpark nozzle and resume
 #ifdef ANYCUBIC_TFT_DEBUG
@@ -159,6 +159,17 @@ void AnycubicTFTClass::StartPrint(){
                 PausedByRunout=false; // clear flag
 #ifdef ANYCUBIC_TFT_DEBUG
                 SERIAL_ECHOLNPGM("DEBUG: Filament Pause Flag cleared");
+#endif
+        }
+        else if((PausedByRunout==false) && (PausedByFilamentChange==true)) // was M600 called?
+        {
+                FilamentChangeResume(); // enter M108 routine
+#ifdef ANYCUBIC_TFT_DEBUG
+                SERIAL_ECHOLNPGM("DEBUG: Start M108 routine");
+#endif
+                PausedByFilamentChange=false; // clear flag
+#ifdef ANYCUBIC_TFT_DEBUG
+                SERIAL_ECHOLNPGM("DEBUG: Filament Change Flag cleared");
 #endif
         }
 #endif
@@ -223,6 +234,25 @@ void AnycubicTFTClass::StopPrint(){
         TFTstate=ANYCUBIC_TFT_STATE_SDSTOP_REQ;
 }
 
+void AnycubicTFTClass::FilamentChangeResume(){
+        enqueue_and_echo_commands_P(PSTR("M108")); // call M108 to break out of M600 pause
+        HOTEND_LOOP() thermalManager.reset_heater_idle_timer(e); // resume heating if timed out
+        wait_for_heatup = false;
+        wait_for_user = false; // remove waiting flags
+        // TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+#ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: M108 Resume called");
+#endif
+}
+
+void AnycubicTFTClass::FilamentChangePause(){
+        enqueue_and_echo_commands_P(PSTR("M600"));
+        TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ; // set TFT state to paused
+#ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: M600 Pause called");
+#endif
+}
+
 
 float AnycubicTFTClass::CodeValue()
 {
@@ -272,12 +302,13 @@ void AnycubicTFTClass::HandleSpecialMenu()
         } else if (strcmp(SelectedDirectory, "<z down 0.1>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.1");
                 enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.1\nG90"));
-        } else if (strcmp(SelectedDirectory, "<m600 pause>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: M600 Pause");
-                enqueue_and_echo_commands_P(PSTR("M600"));
-        } else if (strcmp(SelectedDirectory, "<m108 resume>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: M108 Resume");
-                enqueue_and_echo_commands_P(PSTR("M108"));
+        } else if (strcmp(SelectedDirectory, "<filament change pause>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: Filament Change Pause");
+                PausedByFilamentChange=true;
+                FilamentChangePause();
+        } else if (strcmp(SelectedDirectory, "<filament change resume>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: Filament Change Resume");
+                FilamentChangeResume();
         } else if (strcmp(SelectedDirectory, "<exit>")==0) {
                 SpecialMenu=false;
         }
@@ -321,10 +352,10 @@ void AnycubicTFTClass::Ls()
                         break;
 
                 case 12: // Fourth Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M600 Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M600 Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M108 Resume>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<M108 Resume>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Resume>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Resume>");
                         break;
 
                 default:
@@ -777,7 +808,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
                                         break;
                                 case 13: // A13 SELECTION FILE
 #ifdef SDSUPPORT
-                                        if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
+                                        //if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
+                                        if((TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
                                         {
                                                 starpos = (strchr(TFTstrchr_pointer + 4,'*'));
                                                 if (TFTstrchr_pointer[4] == '/') {

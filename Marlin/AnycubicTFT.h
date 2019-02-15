@@ -1,17 +1,17 @@
 /*
  AnycubicTFT.h  --- Support for Anycubic i3 Mega TFT
  Created by Christian Hopp on 09.12.17.
- 
+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -55,7 +55,7 @@ public:
   void HeatingStart();
   void FilamentRunout();
   void KillTFT();
-  
+
 private:
   char TFTcmdbuffer[TFTBUFSIZE][TFT_MAX_CMD_SIZE];
   int TFTbuflen=0;
@@ -72,7 +72,9 @@ private:
   uint8_t tmp_extruder=0;
   char LastSDstatus=0;
   uint16_t HeaterCheckCount=0;
-  
+  char PausedByRunout=false;
+  char PausedByFilamentChange=false;
+
   struct OutageDataStruct {
     char OutageDataVersion;
     char OutageFlag;
@@ -81,10 +83,10 @@ private:
     float last_hotend_temp;
     long lastSDposition;
   } OutageData;
-  
+
   void WriteOutageEEPromData();
   void ReadOutageEEPromData();
-  
+
   float CodeValue();
   bool CodeSeen(char);
   void Ls();
@@ -96,7 +98,9 @@ private:
   void CheckSDCardChange();
   void CheckHeaterError();
   void HandleSpecialMenu();
-  
+  void FilamentChangePause();
+  void FilamentChangeResume();
+
   char     SelectedDirectory[30];
   uint8_t  SpecialMenu=false;
 
@@ -104,7 +108,6 @@ private:
   char FilamentTestStatus=false;
   char FilamentTestLastStatus=false;
   long FilamentRunoutCounter=0;
-  char PausedByRunout=false;
 #endif
 };
 
