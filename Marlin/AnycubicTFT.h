@@ -104,6 +104,7 @@ private:
   char FilamentTestStatus=false;
   char FilamentTestLastStatus=false;
   long FilamentRunoutCounter=0;
+  char PausedByRunout=false;
 #endif
 };
 

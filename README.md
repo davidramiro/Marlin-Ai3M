@@ -161,7 +161,7 @@ G26 C H200 P25 R25
 
 #### Configuration:
 - Send `M603 L0 U0` to use manual loading & unloading.
-- Send `M603 L530 U555` to use automatic loading & unloading
+- Send `M603 L538 U555` to use automatic loading & unloading
 - Save with `M500`
 
 #### Filament change process (manual loading):
