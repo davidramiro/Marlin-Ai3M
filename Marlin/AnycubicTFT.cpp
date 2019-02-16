@@ -137,10 +137,11 @@ void AnycubicTFTClass::KillTFT()
 
 void AnycubicTFTClass::StartPrint(){
         if (TFTstate==ANYCUBIC_TFT_STATE_SDPAUSE) { // resuming from SD pause
-                if((PausedByRunout==false)) // was that a regular pause?
+                if((PausedByRunout==false) && (PausedByFilamentChange==false)) // was that a regular pause?
                 {
-                        enqueue_and_echo_commands_P(PSTR("G91\nG1 E7 F1800\nG90")); // feed 7mm
-                        enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-10 F240\nG90")); // lower nozzle again
+                        enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
+                        enqueue_and_echo_commands_P(PSTR("G1 Z-10 F240")); // lower nozzle again
+                        enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
 
                 }
         }
@@ -225,6 +226,30 @@ void AnycubicTFTClass::StopPrint(){
         card.stopSDPrint();
 #endif
         clear_command_queue();
+        if((current_position[Z_AXIS]<150))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91"));
+                enqueue_and_echo_commands_P(PSTR("G1 Z20 F240"));
+                enqueue_and_echo_commands_P(PSTR("G90"));
+        }
+        else if ((current_position[Z_AXIS]<190))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91"));
+                enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
+                enqueue_and_echo_commands_P(PSTR("G90"));
+        }
+        else if ((current_position[Z_AXIS]<200))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91"));
+                enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
+                enqueue_and_echo_commands_P(PSTR("G90"));
+        }
+        else if ((current_position[Z_AXIS]>=200))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91"));
+                enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
+                enqueue_and_echo_commands_P(PSTR("G90"));
+        }
         quickstop_stepper();
         print_job_timer.stop();
         thermalManager.disable_all_heaters();
@@ -302,12 +327,12 @@ void AnycubicTFTClass::HandleSpecialMenu()
         } else if (strcmp(SelectedDirectory, "<z down 0.1>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.1");
                 enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.1\nG90"));
-        } else if (strcmp(SelectedDirectory, "<filament change pause>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Filament Change Pause");
+        } else if (strcmp(SelectedDirectory, "<filamentchange pause>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: FilamentChange Pause");
                 PausedByFilamentChange=true;
                 FilamentChangePause();
-        } else if (strcmp(SelectedDirectory, "<filament change resume>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Filament Change Resume");
+        } else if (strcmp(SelectedDirectory, "<filamentchange resume>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: FilamentChange Resume");
                 FilamentChangeResume();
         } else if (strcmp(SelectedDirectory, "<exit>")==0) {
                 SpecialMenu=false;
@@ -352,10 +377,10 @@ void AnycubicTFTClass::Ls()
                         break;
 
                 case 12: // Fourth Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Resume>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Filament Change Resume>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Resume>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Resume>");
                         break;
 
                 default:
@@ -519,18 +544,22 @@ void AnycubicTFTClass::StateHandler()
 #ifdef SDSUPPORT
                 if((!card.sdprinting) && (!planner.movesplanned())) {
                         // We have to wait until the sd card printing has been settled
-                        if((PausedByRunout==false))
+                        if((PausedByRunout==false) && (PausedByFilamentChange==false))
                         {
 #ifdef ANYCUBIC_TFT_DEBUG
                                 SERIAL_ECHOLNPGM("DEBUG: Regular Pause requested");
 #endif
-                                enqueue_and_echo_commands_P(PSTR("G91\nG1 E-7 F1800\nG90")); // retract 7mm
-                                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z10 F240\nG90")); // lift nozzle
-                        } else {
-                                enqueue_and_echo_commands_P(PSTR("G91\nG1 E-7 F1800\nG90")); // retract 7mm
-                                enqueue_and_echo_commands_P(PSTR("M300 S1567 P750\nM300 S2093 P750"));
-                                enqueue_and_echo_commands_P(PSTR("M300 S1567 P750\nM300 S2093 P750"));
-                                enqueue_and_echo_commands_P(PSTR("M300 S1567 P750\nM300 S2093 P750")); // alert user with beeps
+                                enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
+                                enqueue_and_echo_commands_P(PSTR("G1 E-1 F1800")); // retract 1mm
+                                enqueue_and_echo_commands_P(PSTR("G1 Z10 F240")); // lift nozzle by 10mm
+                                enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
+                        } else if((PausedByRunout==true))
+                        {
+                                enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
+                                enqueue_and_echo_commands_P(PSTR("G1 E-2 F1800")); // retract 2mm
+                                enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
+                                enqueue_and_echo_commands_P(PSTR("M300 S1567 P1000")); // alert user with beeps
+                                enqueue_and_echo_commands_P(PSTR("M300 S2093 P3000"));
   #ifdef ANYCUBIC_TFT_DEBUG
                                 SERIAL_ECHOLNPGM("DEBUG: Beep-boop");
   #endif
@@ -560,23 +589,6 @@ void AnycubicTFTClass::StateHandler()
 #ifdef ANYCUBIC_TFT_DEBUG
                         SERIAL_ECHOLNPGM("TFT Serial Debug: SD print stopped... J16");
 #endif
-                        if((current_position[Z_AXIS]<150)) {
-                                enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z20 F240"));
-                                enqueue_and_echo_commands_P(PSTR("G90"));
-                        } else if ((current_position[Z_AXIS]<190)) {
-                                enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
-                                enqueue_and_echo_commands_P(PSTR("G90"));
-                        } else if ((current_position[Z_AXIS]<200)) {
-                                enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
-                                enqueue_and_echo_commands_P(PSTR("G90"));
-                        } else if ((current_position[Z_AXIS]>=200)) {
-                                enqueue_and_echo_commands_P(PSTR("G91"));
-                                enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
-                                enqueue_and_echo_commands_P(PSTR("G90"));
-                        }
                         enqueue_and_echo_commands_P(PSTR("M84"));
                 }
 #endif
@@ -809,7 +821,7 @@ void AnycubicTFTClass::GetCommandFromTFT()
                                 case 13: // A13 SELECTION FILE
 #ifdef SDSUPPORT
                                         //if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
-                                        if((TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE))
+                                        if((TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE)) // allow special menu to be used while printing from USB
                                         {
                                                 starpos = (strchr(TFTstrchr_pointer + 4,'*'));
                                                 if (TFTstrchr_pointer[4] == '/') {
