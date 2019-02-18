@@ -137,7 +137,7 @@ void AnycubicTFTClass::KillTFT()
 
 void AnycubicTFTClass::StartPrint(){
         if (TFTstate==ANYCUBIC_TFT_STATE_SDPAUSE) { // resuming from SD pause
-                if((PausedByRunout==false) && (PausedByFilamentChange==false)) // was that a regular pause?
+                if((!PausedByRunout) && (!PausedByFilamentChange)) // was that a regular pause?
                 {
                         enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
                         enqueue_and_echo_commands_P(PSTR("G1 Z-10 F240")); // lower nozzle again
@@ -147,11 +147,11 @@ void AnycubicTFTClass::StartPrint(){
         }
         starttime=millis();
 #ifdef SDSUPPORT
-        if((PausedByRunout==false) && (PausedByFilamentChange==false)) // was that a regular pause?
+        if((!PausedByRunout) && (!PausedByFilamentChange)) // was that a regular pause?
         {
                 card.startFileprint(); // start or resume regularly
         }
-        else if((PausedByRunout==true) && (PausedByFilamentChange==false)) // resuming from a pause that was caused by filament runout
+        else if((PausedByRunout) && (!PausedByFilamentChange)) // resuming from a pause that was caused by filament runout
         {
                 enqueue_and_echo_commands_P(PSTR("M24")); // unpark nozzle and resume
 #ifdef ANYCUBIC_TFT_DEBUG
@@ -162,7 +162,7 @@ void AnycubicTFTClass::StartPrint(){
                 SERIAL_ECHOLNPGM("DEBUG: Filament Pause Flag cleared");
 #endif
         }
-        else if((PausedByRunout==false) && (PausedByFilamentChange==true)) // was M600 called?
+        else if((!PausedByRunout) && (PausedByFilamentChange)) // was M600 called?
         {
                 FilamentChangeResume(); // enter M108 routine
 #ifdef ANYCUBIC_TFT_DEBUG
@@ -179,7 +179,7 @@ void AnycubicTFTClass::StartPrint(){
 
 void AnycubicTFTClass::PausePrint(){
 #ifdef SDSUPPORT
-        if((PausedByRunout==false)) // is this a regular pause?
+        if((!PausedByRunout)) // is this a regular pause?
         {
                 card.pauseSDPrint();   // pause print regularly
 #ifdef ANYCUBIC_TFT_DEBUG
@@ -195,10 +195,10 @@ void AnycubicTFTClass::PausePrint(){
 #ifdef ANYCUBIC_TFT_DEBUG
                 SERIAL_ECHOLNPGM("DEBUG: M25 sent, parking nozzle");
 #endif
-                ANYCUBIC_SERIAL_PROTOCOLPGM("J23"); //J23 FILAMENT LACK with the prompt box don't disappear
+                ANYCUBIC_SERIAL_PROTOCOLPGM("J23"); //J23 Show Filament Lack prompt on screen
                 ANYCUBIC_SERIAL_ENTER();
 #ifdef ANYCUBIC_TFT_DEBUG
-                SERIAL_ECHOLNPGM("DEBUG: J23 OOF prompt");
+                SERIAL_ECHOLNPGM("DEBUG: J23 Show filament prompt");
 #endif
         }
 #endif
@@ -544,24 +544,24 @@ void AnycubicTFTClass::StateHandler()
 #ifdef SDSUPPORT
                 if((!card.sdprinting) && (!planner.movesplanned())) {
                         // We have to wait until the sd card printing has been settled
-                        if((PausedByRunout==false) && (PausedByFilamentChange==false))
+                        if((!PausedByRunout) && (!PausedByFilamentChange))
                         {
 #ifdef ANYCUBIC_TFT_DEBUG
                                 SERIAL_ECHOLNPGM("DEBUG: Regular Pause requested");
 #endif
                                 enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
-                                enqueue_and_echo_commands_P(PSTR("G1 E-1 F1800")); // retract 1mm
+                                enqueue_and_echo_commands_P(PSTR("G1 E-2 F1800")); // retract 2mm
                                 enqueue_and_echo_commands_P(PSTR("G1 Z10 F240")); // lift nozzle by 10mm
                                 enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
-                        } else if((PausedByRunout==true))
+                        } else if((PausedByRunout))
                         {
                                 enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
-                                enqueue_and_echo_commands_P(PSTR("G1 E-2 F1800")); // retract 2mm
+                                enqueue_and_echo_commands_P(PSTR("G1 E-3 F1800")); // retract 3mm
                                 enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
                                 enqueue_and_echo_commands_P(PSTR("M300 S1567 P1000")); // alert user with beeps
                                 enqueue_and_echo_commands_P(PSTR("M300 S2093 P3000"));
   #ifdef ANYCUBIC_TFT_DEBUG
-                                SERIAL_ECHOLNPGM("DEBUG: Beep-boop");
+                                SERIAL_ECHOLNPGM("DEBUG: Filament runout - Retract, beep and park.");
   #endif
                         }
 #ifdef ANYCUBIC_FILAMENT_RUNOUT_SENSOR
