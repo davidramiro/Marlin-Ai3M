@@ -55,6 +55,9 @@ public:
   void HeatingStart();
   void FilamentRunout();
   void KillTFT();
+  char TFTstate=ANYCUBIC_TFT_STATE_IDLE;
+  bool PausedByRunout=false;
+  bool PausedByFilamentChange=false;
 
 private:
   char TFTcmdbuffer[TFTBUFSIZE][TFT_MAX_CMD_SIZE];
@@ -64,7 +67,6 @@ private:
   char serial3_char;
   int serial3_count = 0;
   char *TFTstrchr_pointer;
-  char TFTstate=ANYCUBIC_TFT_STATE_IDLE;
   char FlagResumFromOutage=0;
   uint16_t filenumber=0;
   unsigned long starttime=0;
@@ -72,8 +74,6 @@ private:
   uint8_t tmp_extruder=0;
   char LastSDstatus=0;
   uint16_t HeaterCheckCount=0;
-  bool PausedByRunout=false;
-  bool PausedByFilamentChange=false;
 
   struct OutageDataStruct {
     char OutageDataVersion;
