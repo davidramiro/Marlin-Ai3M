@@ -10992,6 +10992,12 @@ inline void gcode_M502() {
    *  Default values are used for omitted arguments.
    */
   inline void gcode_M600() {
+    #ifdef SDSUPPORT
+        if ((AnycubicTFT.TFTstate==ANYCUBIC_TFT_STATE_SDPRINT)){
+        AnycubicTFT.TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
+        AnycubicTFT.PausedByFilamentChange=true;
+        }
+    #endif
     point_t park_point = NOZZLE_PARK_POINT;
 
     if (get_target_extruder_from_command(600)) return;
