@@ -1,5 +1,7 @@
 # Anycubic i3 Mega Marlin 1.1.9 by davidramiro
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3MFT8QMP5ZRCE&source=url) [![Downloads](https://img.shields.io/github/downloads/davidramiro/Marlin-AI3M/total.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases) [![Open Issues](https://img.shields.io/github/issues-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aopen+is%3Aissue) [![Closed Issues](https://img.shields.io/github/issues-closed-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aissue+is%3Aclosed) [![License](https://img.shields.io/github/license/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/blob/master/LICENSE) [![Latest Release](https://img.shields.io/github/release/davidramiro/Marlin-AI3m.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases/latest/) ![](https://img.shields.io/github/last-commit/davidramiro/Marlin-AI3m.svg?style=flat)
+
 This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic i3 Mega TFT screen to work.
 
 Feel free to discuss issues and work with me further optimizing this firmware!
@@ -7,7 +9,12 @@ Feel free to discuss issues and work with me further optimizing this firmware!
 I am running this version on an i3 Mega Ultrabase V3 (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).
 Basically, this should work on every Ultrabase version that has two Z-axis endstops.
 
-**The new Mega-S is not officially supported. You can try your luck, but I have no means of troubleshooting issues with that machine. E-steps need to be set to 384 (`M92 E384.00` + `M500`), and afterwards calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).**
+The new Mega-S should work too, but you will need to enter those two commands to make the new extruder work:
+```
+M92 E384
+M500
+```
+Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).
 
 Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
 
@@ -157,7 +164,7 @@ G26 C H200 P25 R25
 
 [m600 demo]: https://kore.cc/i3mega/img/m600demo.jpg "M600 demo"
 
-**A USB host (OctoPrint, Pronterface, ...) is required to use this.**
+**Printing via USB is highly recommended for this.**
 
 #### Configuration:
 - Send `M603 L0 U0` to use manual loading & unloading.
@@ -165,16 +172,27 @@ G26 C H200 P25 R25
 - Save with `M500`
 
 #### Filament change process (manual loading):
-- Place `M600` in your GCode at the desired layer or send it manually
+- For printing via SD:
+  - Place `M600` in your GCode at the desired layer
+- For printing via USB:
+  - Place `M600` in your GCode at the desired layer or send it via terminal
+  - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park and your printer will beep
 - Remove the filament from the bowden tube
 - Insert the new filament right up to the nozzle, just until a bit of plastic oozes out
 - Remove the excess filament from the nozzle with tweezers
-- Send `M108` via your USB host.
-- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+- For printing via SD:
+  - Click `CONTINUE` on the screen
+- For printing via USB:
+  - Send `M108` via your USB host or use `FilamentChange Resume` in the Special Menu
+  - Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
 
 #### Filament change process (automatic loading):
-- Place `M600` in your GCode at the desired layer or send it manually
+- For printing via SD:
+  - Place `M600` in your GCode at the desired layer
+- For printing via USB:
+  - Place `M600` in your GCode at the desired layer or send it via terminal
+  - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park
 - The printer will remove the filament right up to the extruder and beep when finished
 - Insert the new filament just up to the end of the bowden fitting, as shown here:
@@ -183,8 +201,11 @@ G26 C H200 P25 R25
 
 [m600 load]: https://kore.cc/i3mega/img/load.jpg "M600 Load"
 
-- Send `M108` via your USB host.
-- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+- For printing via SD:
+  - Click `CONTINUE` on the screen
+- For printing via USB:
+  - Send `M108` via your USB host or use `FilamentChange Resume` in the Special Menu
+  - Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
 - The printer will now pull in the new filament, watch out since it might ooze quite a bit from the nozzle
 - Remove the excess filament from the nozzle with tweezers
 
