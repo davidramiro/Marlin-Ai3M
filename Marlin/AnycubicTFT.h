@@ -72,8 +72,8 @@ private:
   uint8_t tmp_extruder=0;
   char LastSDstatus=0;
   uint16_t HeaterCheckCount=0;
-  char PausedByRunout=false;
-  char PausedByFilamentChange=false;
+  bool PausedByRunout=false;
+  bool PausedByFilamentChange=false;
 
   struct OutageDataStruct {
     char OutageDataVersion;
