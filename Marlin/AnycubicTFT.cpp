@@ -309,24 +309,9 @@ void AnycubicTFTClass::HandleSpecialMenu()
         } else if (strcmp(SelectedDirectory, "<preheat bed>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Preheat Bed");
                 enqueue_and_echo_commands_P(PSTR("M140 S60"));
-        } else if (strcmp(SelectedDirectory, "<start mesh leveling>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Start Mesh Leveling");
-                enqueue_and_echo_commands_P(PSTR("G29 S1"));
-        } else if (strcmp(SelectedDirectory, "<next mesh point>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Next Mesh Point");
-                enqueue_and_echo_commands_P(PSTR("G29 S2"));
-        } else if (strcmp(SelectedDirectory, "<z up 0.1>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Z Up 0.1");
-                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z+0.1\nG90"));
-        } else if (strcmp(SelectedDirectory, "<z up 0.02>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Z Up 0.02");
-                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z+0.02\nG90"));
-        } else if (strcmp(SelectedDirectory, "<z down 0.02>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.02");
-                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.02\nG90"));
-        } else if (strcmp(SelectedDirectory, "<z down 0.1>")==0) {
-                SERIAL_PROTOCOLLNPGM("Special Menu: Z Down 0.1");
-                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z-0.1\nG90"));
+        } else if (strcmp(SelectedDirectory, "<auto bed leveling>")==0) {
+                SERIAL_PROTOCOLLNPGM("Special Menu: Auto Bed Leveling");
+                enqueue_and_echo_commands_P(PSTR("G28\nG29"));
         } else if (strcmp(SelectedDirectory, "<filamentchange pause>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: FilamentChange Pause");
                 PausedByFilamentChange=true;
@@ -343,42 +328,30 @@ void AnycubicTFTClass::Ls()
 {
         if (SpecialMenu) {
                 switch (filenumber) {
+
                 case 0: // First Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Up 0.1>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Up 0.1>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Up 0.02>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Up 0.02>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Down 0.02>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Down 0.02>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Down 0.1>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Z Down 0.1>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Bed Leveling>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
+						ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
                         break;
 
                 case 4: // Second Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Preheat bed>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Mesh Leveling>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Start Mesh Leveling>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Next Mesh Point>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Next Mesh Point>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Save EEPROM>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>")
                         break;
 
                 case 8: // Third Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Exit>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotend PID>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Auto Tune Hotbed PID>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
-                        break;
-
-                case 12: // Fourth Page
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Resume>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Resume>");
                         break;
