@@ -14,7 +14,7 @@ The new Mega-S should work too, but you will need to enter those two commands to
 M92 E384
 M500
 ```
-Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).
+Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration/).
 
 Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
 
