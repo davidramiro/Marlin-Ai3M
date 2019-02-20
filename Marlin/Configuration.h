@@ -540,7 +540,7 @@
 #define X_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define Y_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define Z_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define Z_MIN_PROBE_ENDSTOP_INVERTING false // set to true to invert the logic of the probe.
+//#define Z_MIN_PROBE_ENDSTOP_INVERTING false // set to true to invert the logic of the probe.
 
 /**
  * Stepper Drivers
@@ -727,15 +727,15 @@
 /**
  * Z Servo Probe, such as an endstop switch on a rotating arm.
  */
-#define Z_PROBE_SERVO_NR 0   // Defaults to SERVO 0 connector.
-#define Z_SERVO_ANGLES {10,90}  // Z Servo Deploy and Stow angles
+//#define Z_PROBE_SERVO_NR 0   // Defaults to SERVO 0 connector.
+//#define Z_SERVO_ANGLES {10,90}  // Z Servo Deploy and Stow angles
 
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-//#define BLTOUCH
+#define BLTOUCH
 #if ENABLED(BLTOUCH)
-  //#define BLTOUCH_DELAY 375   // (ms) Enable and increase if needed
+  #define BLTOUCH_DELAY 100   // (ms) Enable and increase if needed
 #endif
 
 /**
@@ -1924,7 +1924,7 @@
  * Set this manually if there are extra servos needing manual control.
  * Leave undefined or set to 0 to entirely disable the servo subsystem.
  */
-#define NUM_SERVOS 1 // Servo index starts with 0 for M280 command
+//#define NUM_SERVOS 3 // Servo index starts with 0 for M280 command
 
 // Delay (in milliseconds) before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
