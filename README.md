@@ -97,10 +97,10 @@ G29
 
 - Reboot your printer.
 
-[menu]: https://kore.cc/i3mega/download/blt/images/readme/menu.jpg "Special Menu"
-[preheat]: https://kore.cc/i3mega/download/blt/images/readme/preheat.jpg "Preheat 60C"
-[start]: https://kore.cc/i3mega/download/blt/images/readme/start.jpg "Start Auto leveling"
-[save]: https://kore.cc/i3mega/download/blt/images/readme/save.jpg "Save to EEPROM"
+[menu]: https://kore.cc/i3mega/download/images/blt/readme/menu.JPG "Special Menu"
+[preheat]: https://kore.cc/i3mega/download/images/blt/readme/preheat.JPG "Preheat 60C"
+[start]: https://kore.cc/i3mega/download/images/blt/readme/start.JPG "Start Auto leveling"
+[save]: https://kore.cc/i3mega/download/images/blt/readme/save.JPG "Save to EEPROM"
 
 #### After leveling:
 
