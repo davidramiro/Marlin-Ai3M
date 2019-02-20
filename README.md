@@ -1,15 +1,16 @@
 # Anycubic i3 Mega Marlin (BLTouch) 1.1.9 by davidramiro & MNieddu91
 
-This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT), [davidramiros's repo](https://github.com/davidramiro/Marlin-AI3M) and [DerDomink's repo](https://github.com/DerDominik/Marlin-AnycubicI3Mega-BLTouch).
+This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT), [davidramiros's repo](https://github.com/davidramiro/Marlin-AI3M) and [DerDomink's repo](https://github.com/DerDominik/Marlin-AnycubicI3Mega-BLTouch).  
 This version is a simply 1-to-1 copy of [davidramiros's](https://github.com/davidramiro/Marlin-AI3M) with the necessary changes that **BLTouch or any clone can be used.**
 
 Feel free to discuss issues and work with davidramiro and me further optimizing this firmware!
 
-I am running this version on an Anycubic Mega-S (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).
-Basically, this works on every Ultrabase version that has two Z-axis endstops. For i3 Mega with single endstop check [davidramiros's Wiki] https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling#single-z-endstop). By default it is designed to work on i3 Mega. New Mega-S works too, but calibrating your extruder is mandatory since it needs to have increased E-steps, see the instructions below.
+I am running this version on an Anycubic Mega-S (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).  
+Basically, this works on every Ultrabase version that has two Z-axis endstops. For i3 Mega with single endstop check [davidramiros's Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling#single-z-endstop).   
+By default it is designed to work on i3 Mega. New Mega-S works too, but calibrating your extruder is mandatory since it needs to have increased E-steps, see [davidramiros's Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling#mega-s).
 
-All about a highly recommended calibration according to the instructions can be found in [davidramiro's Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).
-You can find everything you need to set up and calibrate the BLTouch in my [Wiki](https://github.com/MNieddu91/Marlin-AI3M-BLTouch/wiki).
+All about a highly recommended calibration according to the instructions can be found in [davidramiro's Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).  
+You can find everything you need to set up and calibrate the BLTouch in my [Wiki](https://github.com/MNieddu91/Marlin-AI3M-BLTouch/wiki).  
 
 Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine. Since I have reduced the acceleration and jerk settings a bit, depending on your slicer the estimated print time might be around 20% lower. You can compensate that loss of speed by raising the general print speed without losing quality.
 
@@ -25,18 +26,18 @@ Note: This is just a firmware, not magic. A big part of print quality still depe
 
 ## Why use this?
 
-You always wanted to use davidramiro's fantastic [firmware](https://github.com/davidramiro/Marlin-AI3M/), but didn't want to miss out on the advantages of Automatic Bed Leveling with BLTouch? - Then you've come to the right place!
+You always wanted to use davidramiro's fantastic [firmware](https://github.com/davidramiro/Marlin-AI3M/), but didn't want to miss out on the advantages of Automatic Bed Leveling with BLTouch? - Then you've come to the right place!  
 I'm working together with davidramiro on this FW and you'll always find the latest version of his FW with the necessary adjustments for BLTouch here. No further changes, just his great firmware with support for BLtouch.
 
 ## Are there pre-compiled firmware files?
 
-No!
-I have decided **NOT** to provide precompiled hex files. Due to various settings which are necessary for the use of a BLTouch, this does not make sense and can only lead to problems.
+No!  
+I have decided **NOT** to provide precompiled hex files. Due to various settings which are necessary for the use of a BLTouch, this does not make sense and can only lead to problems.  
 However, it is not difficult to compile the firmware yourself :-)
 
 ## Which changes are necessary?
 
-**I'll describe the necessary changes for using at least BLTouch in the Wiki.**
+**I'll describe the necessary changes for using at least BLTouch in the [Wiki](https://github.com/MNieddu91/Marlin-AI3M-BLTouch/wiki).**
 
 ### Compile it yourself:
 
@@ -82,8 +83,8 @@ G29
 
 ![Preheat bed][preheat]
 
-- Level your preheated bed as well as you can with the four screws.
-**- At this point make sure you have all setted up right as described in the [Wiki](https://github.com/MNieddu91/Marlin-AI3M-BLTouch/wiki)**
+- Level your preheated bed as well as you can with the four screws.  
+- **At this point make sure you have all setted up right as described in the [Wiki](https://github.com/MNieddu91/Marlin-AI3M-BLTouch/wiki)**
 - Start the Auto Bed Leveling:
 
 ![Start Auto Bed Leveling][start]
