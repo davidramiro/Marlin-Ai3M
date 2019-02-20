@@ -348,7 +348,7 @@ void AnycubicTFTClass::Ls()
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<Load FW Defaults>");
                         ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
-                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>")
+                        ANYCUBIC_SERIAL_PROTOCOLLNPGM("<FilamentChange Pause>");
                         break;
 
                 case 8: // Third Page
