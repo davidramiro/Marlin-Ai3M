@@ -116,5 +116,5 @@ M420 S1
 
 ## Detailed changes:
 
-- Automatic Bed Leveling (BLTouch) enabled ([check this link](http://marlinfw.org/docs/features/auto_bed_leveling.html) to learn more about it)
+- Disabled Mesh Bed Leveling to make room for Automatic Bed Leveling (BLTouch) ([check this link](http://marlinfw.org/docs/features/auto_bed_leveling.html) to learn more about it)
 - The rest are the identical changes as in [davidramiro's changes](https://github.com/davidramiro/Marlin-AI3M#detailed-changes)
