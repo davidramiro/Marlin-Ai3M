@@ -1,5 +1,7 @@
 # Anycubic i3 Mega Marlin 1.1.9 by davidramiro
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3MFT8QMP5ZRCE&source=url) [![Downloads](https://img.shields.io/github/downloads/davidramiro/Marlin-AI3M/total.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases) [![Open Issues](https://img.shields.io/github/issues-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aopen+is%3Aissue) [![Closed Issues](https://img.shields.io/github/issues-closed-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aissue+is%3Aclosed) [![License](https://img.shields.io/github/license/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/blob/master/LICENSE) [![Latest Release](https://img.shields.io/github/release/davidramiro/Marlin-AI3m.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases/latest/) ![](https://img.shields.io/github/last-commit/davidramiro/Marlin-AI3m.svg?style=flat)
+
 This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic i3 Mega TFT screen to work.
 
 Feel free to discuss issues and work with me further optimizing this firmware!
@@ -7,12 +9,20 @@ Feel free to discuss issues and work with me further optimizing this firmware!
 I am running this version on an i3 Mega Ultrabase V3 (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).
 Basically, this should work on every Ultrabase version that has two Z-axis endstops.
 
-**The new Mega-S is not officially supported. You can try your luck, but I have no means of troubleshooting issues with that machine. E-steps need to be set to 384 (`M92 E384.00` + `M500`), and afterwards calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Extruder-Calibration/).**
+The new **Mega-S** should work too, but you will need to enter those two commands to make the new extruder work:
+```
+M92 E384
+M500
+```
+Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration/).
+
+Looking for a **BLtouch firmware**? Head [this way](https://github.com/MNieddu91/Marlin-AI3M-BLTouch)! Mounting and configuration instructions are included.
 
 Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
 
 #### Make sure to take a look at the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/), especially the [FAQ](https://github.com/davidramiro/Marlin-AI3M/wiki/Frequently-Asked-Questions).
 
+A German translation of the instructions can be found [here](https://kore.cc/i3mega/download/marlin-ai3m_german.pdf).
 
 ## Known issues:
 
@@ -20,7 +30,7 @@ Note: This is just a firmware, not magic. A big part of print quality still depe
 - Estimated print times from your slicer might be slightly off.
 - Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
 **Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
-- Cancelling prints via display is buggy sometimes, simply reboot the printer when the menu shows an error. Protip: Switch to OctoPrint.
+- Cancelling prints after pausing may show an error. Simply resume the print before canceling. Protip: Switch to OctoPrint.
 
 
 ## Why use this?
@@ -33,7 +43,7 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Even better print quality by adding Linear Advance, S-Curve Acceleration and some tweaks on jerk and acceleration.
 - Thermal runaway protection: Reducing fire risk by detecting a faulty or misaligned thermistor.
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
-- No need to slice and upload custom bed leveling tests, simply start one with a simple G26 command.
+- No need to slice and upload custom bed leveling tests, test it with a single GCode command
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 - Filament change feature enabled: Switch colors/material mid print with `M600` (instructions below)
 
@@ -45,10 +55,10 @@ I provided three different precompiled hex files: One for no modifications on th
 
 - Download the precompiled firmware here: [Releases](https://github.com/davidramiro/Marlin-AI3M/releases)
 - Choose the correct hex file:
-- For TMC2208 with connectors in original orientation, use `Marlin-AI3M-XXXXXX-TMC2208.hex`
-- If you use TMC2208 and already reversed your connectors, use `Marlin-AI3M-XXXXXX-TMC2208_reversed.hex`
-- If you use a newer version of the TMC2208 that doesn't require the connector to be reversed (TMC2208 "v2.0" written on the PCB, chip on the top side), please also use `Marlin-AI3M-XXXXXX-TMC2208_reversed.hex`.
-- If you use the original stepper motor drivers, use `Marlin-AI3M-XXXXXX-stock_drivers.hex`.
+- For TMC2208 with connectors in original orientation, use `Marlin-AI3M-vx.x.x-TMC2208.hex`
+- If you use TMC2208 and already reversed your connectors, use `Marlin-AI3M-vx.x.x-TMC2208_reversed.hex`
+- If you use a newer version of the TMC2208 that doesn't require the connector to be reversed (TMC2208 "v2.0" written on the PCB, chip on the top side), please also use `Marlin-AI3M-vx.x.x-TMC2208_reversed.hex`.
+- If you use the original stepper motor drivers, use `Marlin-AI3M-vx.x.x-stock_drivers.hex`.
 
 ### Or compile it yourself:
 
@@ -157,24 +167,36 @@ G26 C H200 P25 R25
 
 [m600 demo]: https://kore.cc/i3mega/img/m600demo.jpg "M600 demo"
 
-**A USB host (OctoPrint, Pronterface, ...) is required to use this.**
+**Printing via USB is highly recommended for this.**
 
 #### Configuration:
 - Send `M603 L0 U0` to use manual loading & unloading.
 - Send `M603 L538 U555` to use automatic loading & unloading
+  - The `L` and `U` paramters define the load and unload length in mm. The values above work well on a stock setup, if you modded your extruder, bowden tube or hotend, you might need to adjust those.
 - Save with `M500`
 
 #### Filament change process (manual loading):
-- Place `M600` in your GCode at the desired layer or send it manually
+- For printing via SD:
+  - Place `M600` in your GCode at the desired layer
+- For printing via USB:
+  - Place `M600` in your GCode at the desired layer or send it via terminal
+  - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park and your printer will beep
 - Remove the filament from the bowden tube
 - Insert the new filament right up to the nozzle, just until a bit of plastic oozes out
 - Remove the excess filament from the nozzle with tweezers
-- Send `M108` via your USB host.
-- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+- For printing via SD:
+  - Click `CONTINUE` on the screen
+- For printing via USB:
+  - Send `M108` via your USB host or use `FilamentChange Resume` in the Special Menu
+  - Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
 
 #### Filament change process (automatic loading):
-- Place `M600` in your GCode at the desired layer or send it manually
+- For printing via SD:
+  - Place `M600` in your GCode at the desired layer
+- For printing via USB:
+  - Place `M600` in your GCode at the desired layer or send it via terminal
+  - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park
 - The printer will remove the filament right up to the extruder and beep when finished
 - Insert the new filament just up to the end of the bowden fitting, as shown here:
@@ -183,8 +205,11 @@ G26 C H200 P25 R25
 
 [m600 load]: https://kore.cc/i3mega/img/load.jpg "M600 Load"
 
-- Send `M108` via your USB host.
-- Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
+- For printing via SD:
+  - Click `CONTINUE` on the screen
+- For printing via USB:
+  - Send `M108` via your USB host or use `FilamentChange Resume` in the Special Menu
+  - Note for OctoPrint users: After sending `M108`, enable the advanced options at the bottom of the terminal and press `Fake Acknowledgement`
 - The printer will now pull in the new filament, watch out since it might ooze quite a bit from the nozzle
 - Remove the excess filament from the nozzle with tweezers
 
@@ -207,7 +232,7 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 
 ## Detailed changes:
 
-- Thermal runaway protection enabled and tweaked
+- Thermal runaway protection thresholds tweaked
 - Manual mesh bed leveling enabled ([check this link](https://github.com/MarlinFirmware/Marlin/wiki/Manual-Mesh-Bed-Leveling) to learn more about it)
 - Heatbed PID mode enabled
 - TMC2208 configured in standalone mode
@@ -219,6 +244,8 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - Minor tweaks on default jerk and acceleration
 - Printcounter enabled (`M78`)
 - `M600` filament change feature enabled
+- Screen resume for `M600` implemented
+- Filament runout, stop and pause behaviour tweaked
 
 
 ## Changes by [derhopp](https://github.com/derhopp/):
