@@ -606,7 +606,7 @@ void AnycubicTFTClass::FilamentRunout()
         if(FilamentTestStatus>FilamentTestLastStatus)
         {
                 FilamentRunoutCounter++;
-                if(FilamentRunoutCounter>=15800)
+                if(FilamentRunoutCounter>=31600)
                 {
                         FilamentRunoutCounter=0;
 #ifdef SDSUPPORT
