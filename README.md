@@ -4,21 +4,10 @@
 
 This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic i3 Mega TFT screen to work.
 
-Feel free to discuss issues and work with me further optimizing this firmware!
+## RepRapDiscount Full Graphic Smart Controller branch
+**This branch is prepared to be used with a 12864 display like the [RepRapDiscount Full Graphic Smart Controller](https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller).**
 
-I am running this version on an i3 Mega Ultrabase V3 (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).
-Basically, this should work on every Ultrabase version that has two Z-axis endstops.
-
-The new **Mega-S** should work too, but you will need to enter those two commands to make the new extruder work:
-```
-M92 E384
-M500
-```
-Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration/).
-
-Looking for a **BLtouch firmware**? Head [this way](https://github.com/MNieddu91/Marlin-AI3M-BLTouch)! Mounting and configuration instructions are included.
-
-Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
+---
 
 #### Make sure to take a look at the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/), especially the [FAQ](https://github.com/davidramiro/Marlin-AI3M/wiki/Frequently-Asked-Questions).
 
