@@ -41,7 +41,7 @@
    * Defines the version of the Marlin-AI3M build. Not to be confused with
    * Marlin's own build number, e.g. 1.1.9.
    */
-  #define CUSTOM_BUILD_VERSION "v1.4.0"
+  #define CUSTOM_BUILD_VERSION "v1.4.1"
 
   /**
    * Verbose version identifier which should contain a reference to the location

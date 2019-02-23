@@ -10992,12 +10992,6 @@ inline void gcode_M502() {
    *  Default values are used for omitted arguments.
    */
   inline void gcode_M600() {
-    #ifdef SDSUPPORT
-        if ((AnycubicTFT.TFTstate==ANYCUBIC_TFT_STATE_SDPRINT)){
-        AnycubicTFT.TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
-        AnycubicTFT.PausedByFilamentChange=true;
-        }
-    #endif
     point_t park_point = NOZZLE_PARK_POINT;
 
     if (get_target_extruder_from_command(600)) return;
@@ -11060,6 +11054,19 @@ inline void gcode_M502() {
     const bool job_running = print_job_timer.isRunning();
 
     if (pause_print(retract, park_point, unload_length, true)) {
+      #ifdef SDSUPPORT
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Enter TFTstate routine");
+        #endif
+        AnycubicTFT.TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ; // enter correct display state to show resume button
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Set TFTState to SDPAUSE_REQ");
+        #endif
+        AnycubicTFT.PausedByFilamentChange=true; // set flag to ensure correct resume routine gets executed
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Set filament change flag");
+        #endif
+      #endif
       wait_for_filament_reload(beep_count);
       resume_print(slow_load_length, fast_load_length, ADVANCED_PAUSE_PURGE_LENGTH, beep_count);
     }
