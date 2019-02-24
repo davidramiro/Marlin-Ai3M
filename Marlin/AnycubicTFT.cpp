@@ -264,13 +264,14 @@ void AnycubicTFTClass::FilamentChangeResume(){
         HOTEND_LOOP() thermalManager.reset_heater_idle_timer(e); // resume heating if timed out
         wait_for_heatup = false;
         wait_for_user = false; // remove waiting flags
-        // TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+        card.startFileprint(); // resume with proper progress state
 #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: M108 Resume called");
 #endif
 }
 
 void AnycubicTFTClass::FilamentChangePause(){
+        PausedByFilamentChange=true;
         enqueue_and_echo_commands_P(PSTR("M600"));
         TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ; // set TFT state to paused
 #ifdef ANYCUBIC_TFT_DEBUG
@@ -314,7 +315,6 @@ void AnycubicTFTClass::HandleSpecialMenu()
                 enqueue_and_echo_commands_P(PSTR("G28\nG29"));
         } else if (strcmp(SelectedDirectory, "<filamentchange pause>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: FilamentChange Pause");
-                PausedByFilamentChange=true;
                 FilamentChangePause();
         } else if (strcmp(SelectedDirectory, "<filamentchange resume>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: FilamentChange Resume");
