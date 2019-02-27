@@ -8508,7 +8508,7 @@ inline void gcode_M109() {
     #ifdef ANYCUBIC_TFT_MODEL
       AnycubicTFT.CommandScan();
     #endif
-    
+
     #if TEMP_RESIDENCY_TIME > 0
 
       const float temp_diff = ABS(target_temp - temp);
@@ -8547,11 +8547,11 @@ inline void gcode_M109() {
   #ifdef ANYCUBIC_TFT_MODEL
   AnycubicTFT.HeatingDone();
   #endif
-  
+
   #if DISABLED(BUSY_WHILE_HEATING)
     KEEPALIVE_STATE(IN_HANDLER);
   #endif
-  
+
   // flush the serial buffer after heating to prevent lockup by m105
   SERIAL_FLUSH();
 
@@ -8665,11 +8665,11 @@ inline void gcode_M109() {
           }
         }
       #endif
-      
+
       #ifdef ANYCUBIC_TFT_MODEL
       AnycubicTFT.CommandScan();
       #endif
-      
+
       #if TEMP_BED_RESIDENCY_TIME > 0
 
         const float temp_diff = ABS(target_temp - temp);
@@ -8697,16 +8697,16 @@ inline void gcode_M109() {
       }
 
     } while (wait_for_heatup && TEMP_BED_CONDITIONS);
-    
+
     #ifdef ANYCUBIC_TFT_MODEL
     AnycubicTFT.BedHeatingDone();
     #endif
-    
+
     if (wait_for_heatup) lcd_reset_status();
     #if DISABLED(BUSY_WHILE_HEATING)
       KEEPALIVE_STATE(IN_HANDLER);
     #endif
-    
+
      // flush the serial buffer after heating to prevent lockup by m105
      SERIAL_FLUSH();
   }
@@ -8904,7 +8904,7 @@ inline void gcode_M111() {
     #if ENABLED(ULTIPANEL)
       lcd_reset_status();
     #endif
-    
+
     #ifdef ANYCUBIC_TFT_MODEL
     AnycubicTFT.CommandScan();
     #endif
@@ -8940,7 +8940,7 @@ inline void gcode_M81() {
   #if ENABLED(ULTIPANEL)
     LCD_MESSAGEPGM(MACHINE_NAME " " MSG_OFF ".");
   #endif
-  
+
   #ifdef ANYCUBIC_TFT_MODEL
   AnycubicTFT.CommandScan();
   #endif
@@ -10992,12 +10992,23 @@ inline void gcode_M502() {
    *  Default values are used for omitted arguments.
    */
   inline void gcode_M600() {
+
     #ifdef SDSUPPORT
-        if ((AnycubicTFT.TFTstate==ANYCUBIC_TFT_STATE_SDPRINT)){
-        AnycubicTFT.TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
-        AnycubicTFT.PausedByFilamentChange=true;
-        }
+      if (card.sdprinting) { // are we printing from sd?
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Enter M600 TFTstate routine");
+        #endif
+        AnycubicTFT.TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ; // enter correct display state to show resume button
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Set TFTstate to SDPAUSE_REQ");
+        #endif
+        AnycubicTFT.PausedByFilamentChange=true; // set flag to ensure correct resume routine gets executed
+        #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Set filament change flag");
+        #endif
+      }
     #endif
+
     point_t park_point = NOZZLE_PARK_POINT;
 
     if (get_target_extruder_from_command(600)) return;
@@ -14746,7 +14757,7 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
   #if ENABLED(FILAMENT_RUNOUT_SENSOR)
     runout.run();
   #endif
-  
+
   #if ENABLED(ANYCUBIC_TFT_MODEL) && ENABLED(ANYCUBIC_FILAMENT_RUNOUT_SENSOR)
   AnycubicTFT.FilamentRunout();
   #endif
@@ -14954,7 +14965,7 @@ void idle(
 #ifdef ANYCUBIC_TFT_MODEL
   AnycubicTFT.CommandScan();
 #endif
-  
+
   lcd_update();
 
   host_keepalive();
@@ -15011,7 +15022,7 @@ void kill(const char* lcd_msg) {
   #else
     UNUSED(lcd_msg);
   #endif
-  
+
   #ifdef ANYCUBIC_TFT_MODEL
     // Kill AnycubicTFT
     AnycubicTFT.KillTFT();
@@ -15106,7 +15117,7 @@ void setup() {
   MYSERIAL0.begin(BAUDRATE);
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START();
-  
+
   #ifdef ANYCUBIC_TFT_MODEL
     // Setup AnycubicTFT
     AnycubicTFT.Setup();
@@ -15132,6 +15143,9 @@ void setup() {
   SERIAL_ECHOPGM(MSG_MARLIN);
   SERIAL_CHAR(' ');
   SERIAL_ECHOLNPGM(SHORT_BUILD_VERSION);
+  SERIAL_ECHOPGM(MSG_MARLIN_AI3M);
+  SERIAL_CHAR(' ');
+  SERIAL_ECHOLNPGM(CUSTOM_BUILD_VERSION);
   SERIAL_EOL();
 
   #if defined(STRING_DISTRIBUTION_DATE) && defined(STRING_CONFIG_H_AUTHOR)
