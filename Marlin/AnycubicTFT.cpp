@@ -222,37 +222,30 @@ void AnycubicTFTClass::PausePrint(){
 }
 
 void AnycubicTFTClass::StopPrint(){
+
 #ifdef SDSUPPORT
         card.stopSDPrint();
 #endif
         clear_command_queue();
-        if((current_position[Z_AXIS]<150))
-        {
-                enqueue_and_echo_commands_P(PSTR("G91"));
-                enqueue_and_echo_commands_P(PSTR("G1 Z20 F240"));
-                enqueue_and_echo_commands_P(PSTR("G90"));
-        }
-        else if ((current_position[Z_AXIS]<190))
-        {
-                enqueue_and_echo_commands_P(PSTR("G91"));
-                enqueue_and_echo_commands_P(PSTR("G1 Z10 F240"));
-                enqueue_and_echo_commands_P(PSTR("G90"));
-        }
-        else if ((current_position[Z_AXIS]<200))
-        {
-                enqueue_and_echo_commands_P(PSTR("G91"));
-                enqueue_and_echo_commands_P(PSTR("G1 Z5 F240"));
-                enqueue_and_echo_commands_P(PSTR("G90"));
-        }
-        else if ((current_position[Z_AXIS]>=200))
-        {
-                enqueue_and_echo_commands_P(PSTR("G91"));
-                enqueue_and_echo_commands_P(PSTR("G1 Z1 F240"));
-                enqueue_and_echo_commands_P(PSTR("G90"));
-        }
         quickstop_stepper();
         print_job_timer.stop();
         thermalManager.disable_all_heaters();
+        if((current_position[Z_AXIS]<150))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z20 F240\nG90"));
+        }
+        else if ((current_position[Z_AXIS]<190))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z10 F240\nG90"));
+        }
+        else if ((current_position[Z_AXIS]<200))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z5 F240\nG90"));
+        }
+        else if ((current_position[Z_AXIS]>=200))
+        {
+                enqueue_and_echo_commands_P(PSTR("G91\nG1 Z1 F240\G90"));
+        }
   #if FAN_COUNT > 0
         for (uint8_t i = 0; i < FAN_COUNT; i++) fanSpeeds[i] = 0;
   #endif
@@ -303,10 +296,10 @@ void AnycubicTFTClass::HandleSpecialMenu()
                 enqueue_and_echo_commands_P(PSTR("M303 E-1 S60 C6 U1"));
         } else if (strcmp(SelectedDirectory, "<save eeprom>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Save EEPROM");
-                enqueue_and_echo_commands_P(PSTR("M500"));
+                enqueue_and_echo_commands_P(PSTR("M500\nM300 S1108 P105\nM300 S1661 P210"));
         } else if (strcmp(SelectedDirectory, "<load fw defaults>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Load FW Defaults");
-                enqueue_and_echo_commands_P(PSTR("M502"));
+                enqueue_and_echo_commands_P(PSTR("M502\nM300 S1661 P105\nM300 S1108 P210"));
         } else if (strcmp(SelectedDirectory, "<preheat bed>")==0) {
                 SERIAL_PROTOCOLLNPGM("Special Menu: Preheat Bed");
                 enqueue_and_echo_commands_P(PSTR("M140 S60"));
