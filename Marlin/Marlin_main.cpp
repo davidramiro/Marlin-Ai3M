@@ -519,6 +519,9 @@ static bool relative_mode; // = false;
 // For M109 and M190, this flag may be cleared (by M108) to exit the wait loop
 volatile bool wait_for_heatup = true;
 
+// Making sure this flag can be cleared by the Anycubic display
+volatile bool nozzle_timed_out = false;
+
 // For M0/M1, this flag may be cleared (by M108) to exit the wait-for-user loop
 #if HAS_RESUME_CONTINUE
   volatile bool wait_for_user; // = false;
@@ -7213,7 +7216,11 @@ inline void gcode_M17() {
    * Used by M125 and M600
    */
   static void wait_for_filament_reload(const int8_t max_beep_count=0) {
-    bool nozzle_timed_out = false;
+    nozzle_timed_out = false;
+    nozzle_timed_out = false;
+    #ifdef ANYCUBIC_TFT_MODEL
+      AnycubicTFT.PausedByNozzleTimeout = false;
+    #endif
 
     #if ENABLED(ULTIPANEL)
       lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_INSERT);
@@ -7246,6 +7253,14 @@ inline void gcode_M17() {
           nozzle_timed_out |= thermalManager.is_heater_idle(e);
 
       if (nozzle_timed_out) {
+
+        #ifdef ANYCUBIC_TFT_MODEL
+          AnycubicTFT.PausedByNozzleTimeout=true;
+          #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag set");
+          #endif
+        #endif
+
         #if ENABLED(ULTIPANEL)
           lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_CLICK_TO_HEAT_NOZZLE);
         #endif
@@ -7287,6 +7302,9 @@ inline void gcode_M17() {
 
         wait_for_user = true; // Wait for user to load filament
         nozzle_timed_out = false;
+        #ifdef ANYCUBIC_TFT_DEBUG
+          AnycubicTFT.PausedByNozzleTimeout = false;
+        #endif
 
         #if HAS_BUZZER
           filament_change_beep(max_beep_count, true);
@@ -7320,7 +7338,11 @@ inline void gcode_M17() {
     if (!did_pause_print) return;
 
     // Re-enable the heaters if they timed out
-    bool nozzle_timed_out = false;
+    nozzle_timed_out = false;
+    #ifdef ANYCUBIC_TFT_MODEL
+      AnycubicTFT.PausedByNozzleTimeout = false;
+    #endif
+
     HOTEND_LOOP() {
       nozzle_timed_out |= thermalManager.is_heater_idle(e);
       thermalManager.reset_heater_idle_timer(e);

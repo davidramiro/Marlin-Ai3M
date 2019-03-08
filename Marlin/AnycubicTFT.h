@@ -58,6 +58,7 @@ public:
   char TFTstate=ANYCUBIC_TFT_STATE_IDLE;
   bool PausedByRunout=false;
   bool PausedByFilamentChange=false;
+  bool PausedByNozzleTimeout=false;
 
 private:
   char TFTcmdbuffer[TFTBUFSIZE][TFT_MAX_CMD_SIZE];
@@ -100,6 +101,7 @@ private:
   void HandleSpecialMenu();
   void FilamentChangePause();
   void FilamentChangeResume();
+  void ReheatNozzle();
 
   char     SelectedDirectory[30];
   uint8_t  SpecialMenu=false;

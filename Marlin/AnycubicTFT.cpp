@@ -138,7 +138,7 @@ void AnycubicTFTClass::KillTFT()
 
 void AnycubicTFTClass::StartPrint(){
   if (TFTstate==ANYCUBIC_TFT_STATE_SDPAUSE) { // resuming from SD pause
-    if((!PausedByRunout) && (!PausedByFilamentChange)) // was that a regular pause?
+    if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) // was that a regular pause?
     {
       enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
       enqueue_and_echo_commands_P(PSTR("G1 Z-10 F240")); // lower nozzle again
@@ -148,11 +148,11 @@ void AnycubicTFTClass::StartPrint(){
   }
   starttime=millis();
   #ifdef SDSUPPORT
-    if((!PausedByRunout) && (!PausedByFilamentChange)) // was that a regular pause?
+    if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) // was that a regular pause?
     {
       card.startFileprint(); // start or resume regularly
     }
-    else if((PausedByRunout) && (!PausedByFilamentChange)) // resuming from a pause that was caused by filament runout
+    else if((PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) // resuming from a pause that was caused by filament runout
     {
       enqueue_and_echo_commands_P(PSTR("M24")); // unpark nozzle and resume
       #ifdef ANYCUBIC_TFT_DEBUG
@@ -163,19 +163,30 @@ void AnycubicTFTClass::StartPrint(){
         SERIAL_ECHOLNPGM("DEBUG: Filament Pause Flag cleared");
       #endif
     }
-    else if((!PausedByRunout) && (PausedByFilamentChange)) // was M600 called?
+    else if((!PausedByRunout) && (PausedByFilamentChange) && (!PausedByNozzleTimeout)) // was M600 called and the nozzle is not timed out?
     {
-      FilamentChangeResume(); // enter M108 routine
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: Start M108 routine");
       #endif
-        PausedByFilamentChange=false; // clear flag
+      FilamentChangeResume(); // enter M108 routine
+      PausedByFilamentChange=false; // clear flag
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: Filament Change Flag cleared");
       #endif
     }
   #endif
-  TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+  if (!PausedByNozzleTimeout) {
+    TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+  } else {
+    TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
+    #ifdef ANYCUBIC_TFT_DEBUG
+      SERIAL_ECHOLNPGM("DEBUG: Set Pause again because of timeout");
+    #endif
+    PausedByNozzleTimeout=false;
+    #ifdef ANYCUBIC_TFT_DEBUG
+      SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag cleared");
+    #endif
+  }
 }
 
 void AnycubicTFTClass::PausePrint(){
@@ -192,7 +203,7 @@ void AnycubicTFTClass::PausePrint(){
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: Filament Runout Pause");
       #endif
-        enqueue_and_echo_commands_P(PSTR("M25")); // pause print and park nozzle
+      enqueue_and_echo_commands_P(PSTR("M25")); // pause print and park nozzle
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: M25 sent, parking nozzle");
       #endif
@@ -251,16 +262,19 @@ void AnycubicTFTClass::StopPrint(){
     for (uint8_t i = 0; i < FAN_COUNT; i++) fanSpeeds[i] = 0;
   #endif
   TFTstate=ANYCUBIC_TFT_STATE_SDSTOP_REQ;
+  enqueue_and_echo_commands_P(PSTR("M27")); // force report of SD status
 }
 
 void AnycubicTFTClass::FilamentChangeResume(){
   enqueue_and_echo_commands_P(PSTR("M108")); // call M108 to break out of M600 pause
-  HOTEND_LOOP() thermalManager.reset_heater_idle_timer(e); // resume heating if timed out
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOLNPGM("DEBUG: M108 called");
+  #endif
   wait_for_heatup = false;
   wait_for_user = false; // remove waiting flags
   card.startFileprint(); // resume with proper progress state
   #ifdef ANYCUBIC_TFT_DEBUG
-    SERIAL_ECHOLNPGM("DEBUG: M108 Resume called");
+    SERIAL_ECHOLNPGM("DEBUG: M108 Resume done");
   #endif
 }
 
@@ -271,6 +285,24 @@ void AnycubicTFTClass::FilamentChangePause(){
   #ifdef ANYCUBIC_TFT_DEBUG
     SERIAL_ECHOLNPGM("DEBUG: M600 Pause called");
   #endif
+}
+
+void AnycubicTFTClass::ReheatNozzle(){
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOLNPGM("DEBUG: Send reheat M108");
+  #endif
+  enqueue_and_echo_commands_P(PSTR("M108"));
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOLNPGM("DEBUG: Resume heating");
+  #endif
+  HOTEND_LOOP() thermalManager.reset_heater_idle_timer(e); // resume heating if timed out
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOLNPGM("DEBUG: Clear flags");
+  #endif
+  nozzle_timed_out = false;
+  wait_for_user = false;
+  wait_for_heatup = false;
+  TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
 }
 
 
@@ -538,7 +570,7 @@ void AnycubicTFTClass::StateHandler()
       #ifdef SDSUPPORT
         if((!card.sdprinting) && (!planner.movesplanned())) {
           // We have to wait until the sd card printing has been settled
-          if((!PausedByRunout) && (!PausedByFilamentChange))
+          if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout))
           {
             #ifdef ANYCUBIC_TFT_DEBUG
               SERIAL_ECHOLNPGM("DEBUG: Regular Pause requested");
@@ -602,7 +634,7 @@ void AnycubicTFTClass::FilamentRunout()
       // something changed! save current timestamp.
       const millis_t fil_ms = millis();
       static millis_t fil_delay;
-      
+
       // since this is inside a loop, only set delay time once
       if (FilamentSetMillis){
         #ifdef ANYCUBIC_TFT_DEBUG
@@ -814,7 +846,10 @@ void AnycubicTFTClass::GetCommandFromTFT()
                   SERIAL_ECHOLNPGM("TFT Serial Debug: SD print started... J04");
                 #endif
               }
-              #endif
+              if (nozzle_timed_out) {
+                ReheatNozzle();
+              }
+            #endif
             break;
           case 11: // A11 STOP SD PRINT
             #ifdef SDSUPPORT

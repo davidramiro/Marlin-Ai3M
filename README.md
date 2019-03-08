@@ -9,12 +9,7 @@ Feel free to discuss issues and work with me further optimizing this firmware!
 I am running this version on an i3 Mega Ultrabase V3 (for distinction of the different versions, check [this Thingiverse thread](https://www.thingiverse.com/groups/anycubic-i3-mega/forums/general/topic:27064)).
 Basically, this should work on every Ultrabase version that has two Z-axis endstops.
 
-The new **Mega-S** should work too, but you will need to enter those two commands to make the new extruder work:
-```
-M92 E384
-M500
-```
-Afterwards, calibration is highly recommended as per the instructions on the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration/).
+The new **Mega-S** should work too, but you will need to enter two additional commands after flashing the firmware, mentioned in the instructions below.
 
 Looking for a **BLtouch firmware**? Head [this way](https://github.com/MNieddu91/Marlin-AI3M-BLTouch)! Mounting and configuration instructions are included.
 
@@ -26,7 +21,7 @@ A German translation of the instructions can be found [here](https://kore.cc/i3m
 
 ## Known issues:
 
-- **Cura users: Please turn off jerk and acceleration control in your print settings (not visible by default, select advanced visibility to unlock them). Cura's high default jerk and acceleration might cause shifted layers if you use TMC2208.**
+- Power outage support is not included
 - Estimated print times from your slicer might be slightly off.
 - Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
 **Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
@@ -77,6 +72,11 @@ I provided three different precompiled hex files: One for no modifications on th
 - Connect to the printer and send the following commands:
 - `M502` - load hard coded default values
 - `M500` - save them to EEPROM
+
+**If you are using this on a Mega-S, those two additional commands are necessary:**
+- `M92 E384` - set correct steps for the new extruder
+- `M500` - save them
+- I highly recommend calibrating the extruder.
 
 #### Calibration and other instructions have been moved to the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration).
 
@@ -182,6 +182,9 @@ G26 C H200 P25 R25
   - Place `M600` in your GCode at the desired layer or send it via terminal
   - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park and your printer will beep
+  - For safety reasons, the printer will turn off the hotend after 10 minutes. If you see the temperature being under the target:
+    - SD printing: Click `CONTINUE` **(only once!)** on the screen and wait for the hotend to heat up again.
+    - USB printing: Send `M108` and wait for the hotend to heat up again.
 - Remove the filament from the bowden tube
 - Insert the new filament right up to the nozzle, just until a bit of plastic oozes out
 - Remove the excess filament from the nozzle with tweezers
@@ -199,6 +202,9 @@ G26 C H200 P25 R25
   - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park
 - The printer will remove the filament right up to the extruder and beep when finished
+  - For safety reasons, the printer will turn off the hotend after 10 minutes. If you see the temperature being under the target:
+    - SD printing: Click `CONTINUE` **(only once!)** on the screen and wait for the hotend to heat up again.
+    - USB printing: Send `M108` and wait for the hotend to heat up again.
 - Insert the new filament just up to the end of the bowden fitting, as shown here:
 
 ![Load Filament][m600 load]
