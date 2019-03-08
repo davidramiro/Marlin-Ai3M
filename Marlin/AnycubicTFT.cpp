@@ -33,6 +33,7 @@
 #include "stepper.h"
 #include "serial.h"
 #include "printcounter.h"
+#include "macros.h"
 
 #ifdef ANYCUBIC_TFT_MODEL
 #include "AnycubicTFT.h"
@@ -598,10 +599,26 @@ void AnycubicTFTClass::FilamentRunout()
 
     if(FilamentTestStatus>FilamentTestLastStatus)
     {
-      FilamentRunoutCounter++;
-      if(FilamentRunoutCounter>=31600)
-      {
-        FilamentRunoutCounter=0;
+      // something changed! save current timestamp.
+      const millis_t fil_ms = millis();
+      static millis_t fil_delay;
+      
+      // since this is inside a loop, only set delay time once
+      if (FilamentSetMillis){
+        #ifdef ANYCUBIC_TFT_DEBUG
+          SERIAL_ECHOLNPGM("DEBUG: Set filament trigger time");
+        #endif
+        // set the delayed timestamp to 3000ms later
+        fil_delay = fil_ms + 3000UL;
+        // this doesn't need to run until the filament is recovered again
+        FilamentSetMillis=false;
+      }
+
+      // have three seconds passed?
+      if ((FilamentTestStatus>FilamentTestLastStatus) && (fil_ms>fil_delay)) {
+        #ifdef ANYCUBIC_TFT_DEBUG
+          SERIAL_ECHOLNPGM("DEBUG: 3000ms delay done");
+        #endif
         #ifdef SDSUPPORT
           if((card.sdprinting==true))
           {
@@ -613,21 +630,20 @@ void AnycubicTFTClass::FilamentRunout()
           }
           else if((card.sdprinting==false))
           {
-        #endif
           ANYCUBIC_SERIAL_PROTOCOLPGM("J15"); //J15 FILAMENT LACK
           ANYCUBIC_SERIAL_ENTER();
           #ifdef ANYCUBIC_TFT_DEBUG
             SERIAL_ECHOLNPGM("TFT Serial Debug: Filament runout... J15");
           #endif
-        #ifdef SDSUPPORT
+          FilamentTestLastStatus=FilamentTestStatus;
           }
         #endif
-        FilamentTestLastStatus=FilamentTestStatus;
       }
     }
     else if(FilamentTestStatus!=FilamentTestLastStatus)
     {
-      FilamentRunoutCounter=0;
+      // set the timestamps on the next loop again
+      FilamentSetMillis=true;
       FilamentTestLastStatus=FilamentTestStatus;
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("TFT Serial Debug: Filament runout recovered");

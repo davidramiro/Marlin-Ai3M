@@ -107,7 +107,8 @@ private:
 #if ENABLED(ANYCUBIC_FILAMENT_RUNOUT_SENSOR)
   char FilamentTestStatus=false;
   char FilamentTestLastStatus=false;
-  long FilamentRunoutCounter=0;
+  bool FilamentSetMillis=true;
+
 #endif
 };
 
