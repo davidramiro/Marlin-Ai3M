@@ -271,6 +271,9 @@ FORCE_INLINE bool all_axes_known() { return (axis_known_position & xyz_bits) == 
 
 extern volatile bool wait_for_heatup;
 
+// Making sure this flag can be cleared by the Anycubic display
+extern volatile bool nozzle_timed_out;
+
 #if HAS_RESUME_CONTINUE
   extern volatile bool wait_for_user;
 #endif
