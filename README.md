@@ -41,8 +41,9 @@ However, it is not difficult to compile the firmware yourself :-)
 
 ### Compile it yourself:
 
-- Download Arduino IDE
+- Download and install [Arduino IDE](https://www.arduino.cc/en/main/software)
 - Clone or download this repo
+- Browse into the Marlin folder and run `Marlin.ino`
 - In the IDE, under `Tools -> Board` select `Genuino Mega 2560` and `ATmega2560`
 - Open Marlin.ino in the Marlin directory of this repo
 - Customize if needed and under `Sketch`, select `Export compiled binary`
@@ -52,7 +53,7 @@ However, it is not difficult to compile the firmware yourself :-)
 
 - Flash the hex with Cura, OctoPrint or similar
 - Use a tool with a terminal (OctoPrint, Pronterface, Repetier Host, ...) to send commands to your printer.
-- Connect to the printer and send the following commands:
+- **Important** Connect to the printer and send the following commands:
 - `M502` - load hard coded default values
 - `M500` - save them to EEPROM
 
@@ -111,8 +112,8 @@ G29
 M501
 M420 S1
 ```
-- Enjoy never having to worry about an uneven bed again!
-
+- Your printer should now correctly print first layers even on a warped bed.
+- When working on the printer, installing a new hotend or nozzle or the bed warping over time, a new Mesh Leveling procedure is recommended.
 
 ## Detailed changes:
 
