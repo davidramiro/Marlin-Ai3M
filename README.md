@@ -18,8 +18,6 @@ Note: This is just a firmware, not magic. A big part of print quality still depe
 
 A German translation of the instructions can be found [here](https://kore.cc/i3mega/download/marlin-ai3m_german.pdf).
 
-
-
 ## Why use this?
 
 While the i3 Mega is a great printer for its price and produces fantastic results in stock, there are some issues that are easily addressed:
@@ -33,7 +31,7 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - No need to slice and upload custom bed leveling tests, test it with a single GCode command
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 - Filament change feature enabled: Switch colors/material mid print (instructions below) and control it via display.
-- The filament runout sensor functionality has been overhauled and improved: The hotend now parks and retracts automatically and purges after loading a new spool.
+- The filament runout, pause and stop functionality have been overhauled and improved: The hotend now parks and retracts (on pause or stop) and purges automatically (on resume).
 
 ## Known issues:
 
@@ -41,7 +39,6 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Estimated print times from your slicer might be slightly off.
 - Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
 **Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
-- Cancelling prints after pausing may show an error. Simply resume the print before canceling. Protip: Switch to OctoPrint.
 
 ## How to flash this?
 

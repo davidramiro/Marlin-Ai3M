@@ -75,6 +75,7 @@ private:
   uint8_t tmp_extruder=0;
   char LastSDstatus=0;
   uint16_t HeaterCheckCount=0;
+  bool IsParked = false;
 
   struct OutageDataStruct {
     char OutageDataVersion;
@@ -102,6 +103,7 @@ private:
   void FilamentChangePause();
   void FilamentChangeResume();
   void ReheatNozzle();
+  void ParkAfterStop();
 
   char     SelectedDirectory[30];
   uint8_t  SpecialMenu=false;
