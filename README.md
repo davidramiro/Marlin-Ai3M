@@ -32,6 +32,12 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
 - Filament change feature enabled: Switch colors/material mid print (instructions below) and control it via display.
 - The filament runout, pause and stop functionality have been overhauled and improved: The hotend now parks and retracts (on pause or stop) and purges automatically (on resume).
+- Added `M888` cooldown routine for the Anycubic Ultrabase (EXPERIMENTAL): This is meant to be placed at the end Gcode of your slicer. It hovers over the print bed and does circular movements while running the fan. Works best with custom fan ducts.
+  - Optional parameters:
+  - `T<temperature>`:   Target bed temperature (min 15°C), 30°C if not specified (do not set this under room temperature)
+  - `S<fan speed>`:   Fan speed between 0 and 255, full speed if not specified
+  - e.g. `M888 S191 T25`: run the fan at 75% until the bed has cooled down to 25°C
+
 
 ## Known issues:
 
@@ -259,6 +265,7 @@ No worries. You can easily go back to the default firmware and restore the defau
   - Move nozzle to park position on runout
   - Prevent false positives by adding a small delay to the sensor
 - Pause and stop behaviour tweaked
+- Added `M888` cooldown routine for the Anycubic Ultrabase
 
 
 ## Changes by [derhopp](https://github.com/derhopp/):
