@@ -58,6 +58,7 @@ public:
   char TFTstate=ANYCUBIC_TFT_STATE_IDLE;
   bool PausedByRunout=false;
   bool PausedByFilamentChange=false;
+  bool PausedByNozzleTimeout=false;
 
 private:
   char TFTcmdbuffer[TFTBUFSIZE][TFT_MAX_CMD_SIZE];
@@ -74,6 +75,7 @@ private:
   uint8_t tmp_extruder=0;
   char LastSDstatus=0;
   uint16_t HeaterCheckCount=0;
+  bool IsParked = false;
 
   struct OutageDataStruct {
     char OutageDataVersion;
@@ -100,6 +102,8 @@ private:
   void HandleSpecialMenu();
   void FilamentChangePause();
   void FilamentChangeResume();
+  void ReheatNozzle();
+  void ParkAfterStop();
 
   char     SelectedDirectory[30];
   uint8_t  SpecialMenu=false;
@@ -107,7 +111,8 @@ private:
 #if ENABLED(ANYCUBIC_FILAMENT_RUNOUT_SENSOR)
   char FilamentTestStatus=false;
   char FilamentTestLastStatus=false;
-  long FilamentRunoutCounter=0;
+  bool FilamentSetMillis=true;
+
 #endif
 };
 

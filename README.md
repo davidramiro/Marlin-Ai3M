@@ -7,20 +7,17 @@ This is my slightly customized version of the [Marlin Firmware](https://github.c
 ## RepRapDiscount Full Graphic Smart Controller branch
 **This branch is prepared to be used with a 12864 display like the [RepRapDiscount Full Graphic Smart Controller](https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller).**
 
----
+This firmware works on every i3 Mega that has two Z-axis endstops. If you have an older model with only one Z endstop, a small [adjustment](https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling#single-z-endstop) is required.
+
+The new **Mega-S** should work too, but you will need to enter two additional commands after flashing the firmware, mentioned in the instructions below.
+
+Looking for a **BLtouch firmware**? Head [this way](https://github.com/MNieddu91/Marlin-AI3M-BLTouch)! Mounting and configuration instructions are included.
+
+Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
 
 #### Make sure to take a look at the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/), especially the [FAQ](https://github.com/davidramiro/Marlin-AI3M/wiki/Frequently-Asked-Questions).
 
 A German translation of the instructions can be found [here](https://kore.cc/i3mega/download/marlin-ai3m_german.pdf).
-
-## Known issues:
-
-- **Cura users: Please turn off jerk and acceleration control in your print settings (not visible by default, select advanced visibility to unlock them). Cura's high default jerk and acceleration might cause shifted layers if you use TMC2208.**
-- Estimated print times from your slicer might be slightly off.
-- Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
-**Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
-- Cancelling prints after pausing may show an error. Simply resume the print before canceling. Protip: Switch to OctoPrint.
-
 
 ## Why use this?
 
@@ -34,7 +31,21 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Very loud stock stepper motor drivers, easily replaced by Watterott or FYSETC TMC2208. To do that, you'd usually have to flip the connectors on the board, this is not necessary using this firmware.
 - No need to slice and upload custom bed leveling tests, test it with a single GCode command
 - Easily start an auto PID tune or mesh bed leveling via the special menu (insert SD card, select special menu and press the round arrow)
-- Filament change feature enabled: Switch colors/material mid print with `M600` (instructions below)
+- Filament change feature enabled: Switch colors/material mid print (instructions below) and control it via display.
+- The filament runout, pause and stop functionality have been overhauled and improved: The hotend now parks and retracts (on pause or stop) and purges automatically (on resume).
+- Added `M888` cooldown routine for the Anycubic Ultrabase (EXPERIMENTAL): This is meant to be placed at the end Gcode of your slicer. It hovers over the print bed and does circular movements while running the fan. Works best with custom fan ducts.
+  - Optional parameters:
+  - `T<temperature>`:   Target bed temperature (min 15°C), 30°C if not specified (do not set this under room temperature)
+  - `S<fan speed>`:   Fan speed between 0 and 255, full speed if not specified
+  - e.g. `M888 S191 T25`: run the fan at 75% until the bed has cooled down to 25°C
+
+
+## Known issues:
+
+- Power outage support is not included
+- Estimated print times from your slicer might be slightly off.
+- Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
+**Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
 
 ## How to flash this?
 
@@ -51,8 +62,9 @@ I provided three different precompiled hex files: One for no modifications on th
 
 ### Or compile it yourself:
 
-- Download Arduino IDE
+- Download and install [Arduino IDE](https://www.arduino.cc/en/main/software)
 - Clone or download this repo
+- Browse into the Marlin folder and run `Marlin.ino`
 - In the IDE, under `Tools -> Board` select `Genuino Mega 2560` and `ATmega2560`
 - Open Marlin.ino in the Marlin directory of this repo
 - [Customize if needed](https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling) (e.g. motor directions and type at line `559` to `566` and line `857` to `865` in `Configuration.h`)
@@ -63,12 +75,16 @@ I provided three different precompiled hex files: One for no modifications on th
 
 - Flash the hex with Cura, OctoPrint or similar
 - Use a tool with a terminal (OctoPrint, Pronterface, Repetier Host, ...) to send commands to your printer.
-- Connect to the printer and send the following commands:
+- **Important** Connect to the printer and send the following commands:
 - `M502` - load hard coded default values
 - `M500` - save them to EEPROM
 
-#### Calibration and other instructions have been moved to the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration).
+**If you are using this on a Mega-S, those two additional commands are necessary:**
+- `M92 E384` - set correct steps for the new extruder
+- `M500` - save them
+- I highly recommend calibrating the extruder.
 
+#### Calibration and other instructions have been moved to the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration).
 
 ## Manual Mesh Bed Leveling
 
@@ -92,7 +108,7 @@ If you have issues with an uneven bed, this is a great feature.
 - Your nozzle will now move to the first calibration position.
 - Don't adjust the bed itself with screws, only use software from here on!
 - Use a paper - I recommend using thermopaper like a receipt or baking paper
-- Use the onscreen controls to lower or raise your nozzle until you feel a light resistance: (If you want to send the same command multiple times, select the item again, even though it is still marked red.)
+- Use the onscreen controls to lower or raise your nozzle until you feel a light resistance: (**If you want to send the same command multiple times, select the item again, even though it is still marked red.**)
 
 ![Z axis controls][control]
 
@@ -101,7 +117,7 @@ If you have issues with an uneven bed, this is a great feature.
 ![Next mesh point][next]
 
 - Repeat the last two steps until all 25 points are done.
-- Your printer will beep, wait 20 seconds and then save:
+- Your printer will beep, wait 20 seconds and then save (the printer will beep once more to confirm):
 
 
 ![Save to EEPROM][save]
@@ -118,15 +134,14 @@ If you have issues with an uneven bed, this is a great feature.
 
 ### After leveling:
 
-- Reboot the printer.
 - To ensure your mesh gets used on every print from now on, go into your slicer settings and look for the start GCode
 - Look for the Z-homing (either just `G28` or `G28 Z0`) command and insert these two right underneath it:
 ```
 M501
 M420 S1
 ```
-- Enjoy never having to worry about an uneven bed again!
-
+- Your printer should now correctly print first layers even on a warped bed.
+- When working on the printer, installing a new hotend or nozzle or the bed warping over time, a new Mesh Leveling procedure is recommended.
 
 #### Manual commands for use with OctoPrint etc.:
 
@@ -145,6 +160,7 @@ G28
 G26 C H200 P25 R25
 ```
 - To adjust your filament's needed temperature, change the number of the `H` parameter
+- Default bed temperature is 60°C, if you need another temperature, add e.g. `B80`
 - If your leveling is good, you will have a complete pattern of your mesh on your bed that you can peel off in one piece
 - Don't worry if the test looks a bit messy, the important thing is just that the line width is the same all over the mesh
 - Optional: Hang it up on a wall to display it as a trophy of how great your leveling skills are.
@@ -156,9 +172,9 @@ G26 C H200 P25 R25
 
 [m600 demo]: https://kore.cc/i3mega/img/m600demo.jpg "M600 demo"
 
-**Printing via USB is highly recommended for this.**
+**BETA: This now also works without USB printing, via SD & display.**
 
-#### Configuration:
+#### Configuration (only needed once):
 - Send `M603 L0 U0` to use manual loading & unloading.
 - Send `M603 L538 U555` to use automatic loading & unloading
   - The `L` and `U` paramters define the load and unload length in mm. The values above work well on a stock setup, if you modded your extruder, bowden tube or hotend, you might need to adjust those.
@@ -171,6 +187,9 @@ G26 C H200 P25 R25
   - Place `M600` in your GCode at the desired layer or send it via terminal
   - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park and your printer will beep
+  - For safety reasons, the printer will turn off the hotend after 10 minutes. If you see the temperature being under the target:
+    - SD printing: Click `CONTINUE` **(only once!)** on the screen and wait for the hotend to heat up again.
+    - USB printing: Send `M108` and wait for the hotend to heat up again.
 - Remove the filament from the bowden tube
 - Insert the new filament right up to the nozzle, just until a bit of plastic oozes out
 - Remove the excess filament from the nozzle with tweezers
@@ -188,6 +207,9 @@ G26 C H200 P25 R25
   - Alternatively: Use `FilamentChange Pause` in the Special Menu
 - The nozzle will park
 - The printer will remove the filament right up to the extruder and beep when finished
+  - For safety reasons, the printer will turn off the hotend after 10 minutes. If you see the temperature being under the target:
+    - SD printing: Click `CONTINUE` **(only once!)** on the screen and wait for the hotend to heat up again.
+    - USB printing: Send `M108` and wait for the hotend to heat up again.
 - Insert the new filament just up to the end of the bowden fitting, as shown here:
 
 ![Load Filament][m600 load]
@@ -218,6 +240,11 @@ M304
 
 After flashing the new version, issue a `M502` and `M500`. After that, enter every line you saved before and finish by saving with `M500`.
 
+## Something went wrong?
+No worries. You can easily go back to the default firmware and restore the default settings.
+- Flash the hex file from the [manufacturer's website](http://www.anycubic3d.com/support/show/594016.html) (in case it's offline, I have uploaded the stock firmwares [here](https://kore.cc/i3mega/download/stockFW/) as well).
+- After flashing, send `M502` and `M500`. Now your machine is exactly as it came out of the box.
+
 
 ## Detailed changes:
 
@@ -231,10 +258,15 @@ After flashing the new version, issue a `M502` and `M500`. After that, enter eve
 - G26 Mesh Validation enabled
 - Some redundant code removed to save memory
 - Minor tweaks on default jerk and acceleration
-- Printcounter enabled (`M78`)
+- Print statistics enabled (send `M78` to read them)
 - `M600` filament change feature enabled
-- Screen resume for `M600` implemented
-- Filament runout, stop and pause behaviour tweaked
+  - Implemented easy resume via display
+- Filament runout behaviour tweaked
+  - Added purge and retract
+  - Move nozzle to park position on runout
+  - Prevent false positives by adding a small delay to the sensor
+- Pause and stop behaviour tweaked
+- Added `M888` cooldown routine for the Anycubic Ultrabase
 
 
 ## Changes by [derhopp](https://github.com/derhopp/):
@@ -320,3 +352,26 @@ Notable contributors include:
 ## License
 
 Marlin is published under the [GPLv3 license](https://github.com/MarlinFirmware/Marlin/blob/1.0.x/COPYING.md) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
+
+## Disclaimer
+
+```
+/*
+* Flashing a custom firmware happens at your own risk.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
+* AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+* PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+* THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+* OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+* IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+```
