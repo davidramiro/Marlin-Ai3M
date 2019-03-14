@@ -228,6 +228,7 @@
  * M867 - Enable/disable or toggle error correction for position encoder modules.
  * M868 - Report or set position encoder module error correction threshold.
  * M869 - Report position encoder module error.
+ * M888 - Ultrabase cooldown: Let the parts cooling fan hover above the finished print to cool down the bed. EXPERIMENTAL FEATURE!
  * M900 - Get or Set Linear Advance K-factor. (Requires LIN_ADVANCE)
  * M906 - Set or get motor current in milliamps using axis codes X, Y, Z, E. Report values if no axis codes given. (Requires at least one _DRIVER_TYPE defined as TMC2130/TMC2208/TMC2660)
  * M907 - Set digital trimpot motor current using axis codes. (Requires a board with digital trimpots)
@@ -11403,6 +11404,56 @@ inline void gcode_M502() {
   }
 #endif // MAX7219_GCODE
 
+  /**
+   * M888: Cooldown routine for the Anycubic Ultrabase (EXPERIMENTAL):
+   *       This is meant to be placed at the end Gcode of your slicer.
+   *       It hovers over the print bed and does circular movements while
+   *       running the fan. Works best with custom fan ducts.
+   *
+   *  T<int>   Target bed temperature (min 15°C), 30°C if not specified
+   *  S<int>   Fan speed between 0 and 255, full speed if not specified
+   */
+  inline void gcode_M888() {
+    // don't do this if the machine is not homed
+    if (axis_unhomed_error()) return;
+
+    const float cooldown_arc[2] = { 50, 50 };
+    const uint8_t cooldown_target = MAX((parser.ushortval('T', 30)), 15);
+
+    // set hotbed temperate to zero
+    thermalManager.setTargetBed(0);
+    SERIAL_PROTOCOLLNPGM("Ultrabase cooldown started");
+
+    // set fan to speed <S>, if undefined blast at full speed
+    uint8_t cooldown_fanspeed = parser.ushortval('S', 255);
+    fanSpeeds[0] = MIN(cooldown_fanspeed, 255U);
+
+    // raise z by 2mm and move to X50, Y50
+    do_blocking_move_to_z(MIN(current_position[Z_AXIS] + 2, Z_MAX_POS), 5);
+    do_blocking_move_to_xy(50, 50, 100);
+
+    while ((thermalManager.degBed() > cooldown_target)) {
+      // queue arc movement
+      gcode_get_destination();
+      plan_arc(destination, cooldown_arc, true);
+      SERIAL_PROTOCOLLNPGM("Target not reached, queued an arc");
+
+      // delay while arc is in progress
+      while (planner.movesplanned()) {
+        idle();
+      }
+    idle();
+    }
+    // the bed should be under <T> now
+    fanSpeeds[0]=0;
+    do_blocking_move_to_xy(MAX(X_MIN_POS, 10), MIN(Y_MAX_POS, 190), 100);
+    BUZZ(100, 659);
+    BUZZ(150, 1318);
+    enqueue_and_echo_commands_P(PSTR("M84"));
+    SERIAL_PROTOCOLLNPGM("M888 cooldown routine done");
+  }
+
+
 #if ENABLED(LIN_ADVANCE)
   /**
    * M900: Get or Set Linear Advance K-factor
@@ -13137,6 +13188,8 @@ void process_parsed_command() {
         case 868: gcode_M868(); break;                            // M868: Set error correction threshold
         case 869: gcode_M869(); break;                            // M869: Report axis error
       #endif
+
+      case 888: gcode_M888(); break;                              // M888: Ultrabase cooldown (EXPERIMENTAL)
 
       #if ENABLED(LIN_ADVANCE)
         case 900: gcode_M900(); break;                            // M900: Set Linear Advance K factor
