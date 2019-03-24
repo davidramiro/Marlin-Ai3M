@@ -1,18 +1,10 @@
-# Anycubic i3 Mega Marlin 1.1.9 by davidramiro
+# Anycubic i3 Mega / Mega-S Marlin 1.1.9 by davidramiro
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3MFT8QMP5ZRCE&source=url) [![Downloads](https://img.shields.io/github/downloads/davidramiro/Marlin-AI3M/total.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases) [![Open Issues](https://img.shields.io/github/issues-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aopen+is%3Aissue) [![Closed Issues](https://img.shields.io/github/issues-closed-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aissue+is%3Aclosed) [![License](https://img.shields.io/github/license/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/blob/master/LICENSE) [![Latest Release](https://img.shields.io/github/release/davidramiro/Marlin-AI3m.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases/latest/) ![](https://img.shields.io/github/last-commit/davidramiro/Marlin-AI3m.svg?style=flat)
 
-This is my slightly customized version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin), gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic i3 Mega TFT screen to work.
-
-Feel free to discuss issues and work with me further optimizing this firmware!
-
-This firmware works on every i3 Mega that has two Z-axis endstops. If you have an older model with only one Z endstop, a small [adjustment](https://github.com/davidramiro/Marlin-AI3M/wiki/Customization-&-Compiling#single-z-endstop) is required.
-
-The new **Mega-S** should work too, but you will need to enter two additional commands after flashing the firmware, mentioned in the instructions below.
+This is a custom version of the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) for the i3 Mega/Mega-S, gratefully based on [derhopp's repo](https://github.com/derhopp/Marlin-with-Anycubic-i3-Mega-TFT) with his remarkable efforts to get the Anycubic TFT screen to work with the latest versions of Marlin.
 
 Looking for a **BLtouch firmware**? Head [this way](https://github.com/MNieddu91/Marlin-AI3M-BLTouch)! Mounting and configuration instructions are included.
-
-Note: This is just a firmware, not magic. A big part of print quality still depends on your slicer settings and mechanical condition of your machine.
 
 #### Make sure to take a look at the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/), especially the [FAQ](https://github.com/davidramiro/Marlin-AI3M/wiki/Frequently-Asked-Questions).
 
@@ -20,7 +12,7 @@ A German translation of the instructions can be found [here](https://kore.cc/i3m
 
 ## Why use this?
 
-While the i3 Mega is a great printer for its price and produces fantastic results in stock, there are some issues that are easily addressed:
+While the i3 Mega is a great printer for its price and produces fantastic results in stock, there are some improvements and additional features that this firmware provides:
 
 - Many people have issues getting the Ultrabase leveled perfectly, using Manual Mesh Bed Leveling the printer generates a mesh of the flatness of the bed and compensates for it on the Z-axis for perfect prints without having to level with the screws.
 - Much more efficient bed heating by using PID control. This uses less power and holds the temperature at a steady level. Highly recommended for printing ABS.
@@ -156,10 +148,11 @@ M420 S1
 - No need to download or create a bed leveling test, simply send those commands to your printer:
 ```
 G28
-G26 C H200 P25 R25
+G26 C H200 P5 R25 Q4.2 Z4
 ```
 - To adjust your filament's needed temperature, change the number of the `H` parameter
 - Default bed temperature is 60°C, if you need another temperature, add e.g. `B80`
+- `Q` parameter sets retraction length in mm, `Z` sets unretraction.
 - If your leveling is good, you will have a complete pattern of your mesh on your bed that you can peel off in one piece
 - Don't worry if the test looks a bit messy, the important thing is just that the line width is the same all over the mesh
 - Optional: Hang it up on a wall to display it as a trophy of how great your leveling skills are.
