@@ -115,6 +115,13 @@ void AnycubicTFTClass::Setup() {
 
   SelectedDirectory[0]=0;
   SpecialMenu=false;
+
+  #ifdef STARTUP_CHIME
+    buzzer.tone(250, 554); // C#5
+    buzzer.tone(250, 740); // F#5
+    buzzer.tone(250, 554); // C#5
+    buzzer.tone(500, 831); // G#5
+  #endif
 }
 
 void AnycubicTFTClass::WriteOutageEEPromData() {
