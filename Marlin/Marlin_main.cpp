@@ -14815,6 +14815,25 @@ void disable_all_steppers() {
   disable_e_steppers();
 }
 
+#ifdef ENDSTOP_BEEP
+  void EndstopBeep() {
+    static char last_status=((READ(X_MIN_PIN)<<2)|(READ(Y_MIN_PIN)<<1)|READ(X_MAX_PIN));
+    static unsigned char now_status;
+
+    now_status=((READ(X_MIN_PIN)<<2)|(READ(Y_MIN_PIN)<<1)|READ(X_MAX_PIN))&0xff;
+
+    if(now_status<last_status) {
+      static millis_t endstop_ms = millis() + 300UL;
+      if (ELAPSED(millis(), endstop_ms)) {
+        buzzer.tone(60, 2000);
+      }
+    last_status=now_status;
+    } else if(now_status!=last_status) {
+      last_status=now_status;
+    }
+  }
+#endif
+
 /**
  * Manage several activities:
  *  - Check for Filament Runout
@@ -15039,6 +15058,10 @@ void idle(
 
 #ifdef ANYCUBIC_TFT_MODEL
   AnycubicTFT.CommandScan();
+#endif
+
+#ifdef ENDSTOP_BEEP
+  EndstopBeep();
 #endif
 
   lcd_update();
