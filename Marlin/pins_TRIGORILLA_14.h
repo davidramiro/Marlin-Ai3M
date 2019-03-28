@@ -111,9 +111,12 @@
 	#endif
 #endif
 
-#if defined(ANYCUBIC_TFT_MODEL)
+#if defined(ANYCUBIC_TFT_MODEL) || defined(REPRAP_DISCOUNT_SMART_CONTROLLER)
   #define BEEPER_PIN       31
   #define SD_DETECT_PIN    49
+#else
+  #define BEEPER_PIN       31
+  #define SD_DETECT_PIN    -1
 #endif
 
 // LCD
@@ -133,13 +136,11 @@
 		#define LCD_PINS_D7 29
 
 		#ifdef REPRAP_DISCOUNT_SMART_CONTROLLER
-			#define BEEPER_PIN 37
 
 			#define BTN_EN1 31
 			#define BTN_EN2 33
 			#define BTN_ENC 35
 
-			#define SD_DETECT_PIN 49
 			#elif defined(LCD_I2C_PANELOLU2)
 				#define BTN_EN1 47  //reverse if the encoder turns the wrong way.
 				#define BTN_EN2 43
