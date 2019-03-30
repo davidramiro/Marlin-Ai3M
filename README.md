@@ -338,7 +338,7 @@ Notable contributors include:
  - [[@paulusjacobus](https://github.com/paulusjacobus)]
  - [[@psavva](https://github.com/psavva)]
  - [[@Tannoo](https://github.com/Tannoo)]
- - [[@TheSFReader](https://github.com/TheSFReader)]
+ - [[@teemuatlut](https://github.com/teemuatlut)]
  - ...and many others
 
 ## License
