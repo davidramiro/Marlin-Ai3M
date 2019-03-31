@@ -33,6 +33,7 @@
 #include "printcounter.h"
 #include "delay.h"
 #include "endstops.h"
+#include "buzzer.h"
 
 #if ENABLED(HEATER_0_USES_MAX6675)
   #include "MarlinSPI.h"
@@ -456,6 +457,8 @@ uint8_t Temperature::soft_pwm_amount[HOTENDS];
       }
 
       if (cycles > ncycles) {
+        buzzer.tone(105, 1108);
+        buzzer.tone(210, 1661);
         SERIAL_PROTOCOLLNPGM(MSG_PID_AUTOTUNE_FINISHED);
 
         #if HAS_PID_FOR_BOTH
