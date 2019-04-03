@@ -7212,9 +7212,6 @@ inline void gcode_M17() {
    */
   static void wait_for_filament_reload(const int8_t max_beep_count=0) {
     nozzle_timed_out = false;
-    #ifdef ANYCUBIC_TFT_MODEL
-      AnycubicTFT.PausedByNozzleTimeout = false;
-    #endif
 
     #if ENABLED(ULTIPANEL)
       lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_INSERT);
@@ -7249,7 +7246,13 @@ inline void gcode_M17() {
       if (nozzle_timed_out) {
 
         #ifdef ANYCUBIC_TFT_MODEL
-          AnycubicTFT.PausedByNozzleTimeout=true;
+          if (AnycubicTFT.ai3m_pause_state < 3) {
+            AnycubicTFT.ai3m_pause_state += 2;
+            #ifdef ANYCUBIC_TFT_DEBUG
+              SERIAL_ECHOPAIR(" DEBUG: NTO - AI3M Pause State set to: ", AnycubicTFT.ai3m_pause_state);
+              SERIAL_EOL();
+            #endif
+          }
           #ifdef ANYCUBIC_TFT_DEBUG
             SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag set");
           #endif
@@ -7296,8 +7299,14 @@ inline void gcode_M17() {
 
         wait_for_user = true; // Wait for user to load filament
         nozzle_timed_out = false;
-        #ifdef ANYCUBIC_TFT_DEBUG
-          AnycubicTFT.PausedByNozzleTimeout = false;
+        #ifdef ANYCUBIC_TFT_MODEL
+          if (AnycubicTFT.ai3m_pause_state > 3) {
+            AnycubicTFT.ai3m_pause_state -= 2;
+            #ifdef ANYCUBIC_TFT_DEBUG
+              SERIAL_ECHOPAIR(" DEBUG: NTO - AI3M Pause State set to: ", AnycubicTFT.ai3m_pause_state);
+              SERIAL_EOL();
+            #endif
+          }
         #endif
 
         #if HAS_BUZZER
@@ -7334,7 +7343,13 @@ inline void gcode_M17() {
     // Re-enable the heaters if they timed out
     nozzle_timed_out = false;
     #ifdef ANYCUBIC_TFT_MODEL
-      AnycubicTFT.PausedByNozzleTimeout = false;
+      if (AnycubicTFT.ai3m_pause_state > 3) {
+        AnycubicTFT.ai3m_pause_state -= 2;
+        #ifdef ANYCUBIC_TFT_DEBUG
+          SERIAL_ECHOPAIR(" DEBUG: NTO - AI3M Pause State set to: ", AnycubicTFT.ai3m_pause_state);
+          SERIAL_EOL();
+        #endif
+      }
     #endif
 
     HOTEND_LOOP() {
@@ -8569,7 +8584,7 @@ inline void gcode_M109() {
   #endif
 
   // flush the serial buffer after heating to prevent lockup by m105
-  SERIAL_FLUSH();
+  //SERIAL_FLUSH();
 
 }
 
@@ -8724,7 +8739,7 @@ inline void gcode_M109() {
     #endif
 
      // flush the serial buffer after heating to prevent lockup by m105
-     SERIAL_FLUSH();
+     //SERIAL_FLUSH();
   }
 
 #endif // HAS_HEATED_BED
@@ -11011,6 +11026,13 @@ inline void gcode_M502() {
     #ifdef ANYCUBIC_TFT_MODEL
       #ifdef SDSUPPORT
         if (card.sdprinting) { // are we printing from sd?
+          if (AnycubicTFT.ai3m_pause_state < 2) {
+            AnycubicTFT.ai3m_pause_state = 2;
+            #ifdef ANYCUBIC_TFT_DEBUG
+              SERIAL_ECHOPAIR(" DEBUG: M600 - AI3M Pause State set to: ", AnycubicTFT.ai3m_pause_state);
+              SERIAL_EOL();
+            #endif
+          }
           #ifdef ANYCUBIC_TFT_DEBUG
               SERIAL_ECHOLNPGM("DEBUG: Enter M600 TFTstate routine");
           #endif
@@ -11018,10 +11040,7 @@ inline void gcode_M502() {
           #ifdef ANYCUBIC_TFT_DEBUG
               SERIAL_ECHOLNPGM("DEBUG: Set TFTstate to SDPAUSE_REQ");
           #endif
-          AnycubicTFT.PausedByFilamentChange=true; // set flag to ensure correct resume routine gets executed
-          #ifdef ANYCUBIC_TFT_DEBUG
-              SERIAL_ECHOLNPGM("DEBUG: Set filament change flag");
-          #endif
+          // set flag to ensure correct resume routine gets executed
         }
       #endif
     #endif

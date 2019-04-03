@@ -144,81 +144,127 @@ void AnycubicTFTClass::KillTFT()
 }
 
 
-void AnycubicTFTClass::StartPrint(){
-  // are we resuming from a pause?
-  if (TFTstate==ANYCUBIC_TFT_STATE_SDPAUSE) {
-    // was that a regular pause?
-    if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) {
+void AnycubicTFTClass::StartPrint() {
+  // which kind of starting behaviour is needed?
+  switch (ai3m_pause_state) {
+    case 0:
+      // no pause, just a regular start
+      starttime=millis();
+      card.startFileprint();
+      TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
+        SERIAL_ECHOLNPGM("DEBUG: Regular Start");
+      #endif
+      break;
+    case 1:
+      // regular sd pause
       enqueue_and_echo_commands_P(PSTR("M24")); // unpark nozzle
       #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
         SERIAL_ECHOLNPGM("DEBUG: M24 Resume from regular pause");
       #endif
       IsParked=false; // remove parked flag
-    }
-  }
-  starttime=millis();
-  #ifdef SDSUPPORT
-    // was that a regular pause or are we starting a print?
-    if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) {
-      card.startFileprint(); // start or resume regularly
-    }
-    // resuming from a pause that was caused by filament runout
-    else if((PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) {
+      starttime=millis();
+      card.startFileprint(); // resume regularly
+      TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+      ai3m_pause_state = 0;
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
+      #endif
+      break;
+    case 2:
+      // paused by M600
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
+        SERIAL_ECHOLNPGM("DEBUG: Start M108 routine");
+      #endif
+      FilamentChangeResume(); // enter display M108 routine
+      ai3m_pause_state = 0; // clear flag
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: Filament Change Flag cleared");
+      #endif
+      break;
+    case 3:
+      // paused by filament runout
       enqueue_and_echo_commands_P(PSTR("M24")); // unpark nozzle and resume
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: M24 Resume from Filament Runout");
       #endif
-      PausedByRunout = IsParked = false; // clear flags
+      IsParked = false; // clear flags
+      ai3m_pause_state = 0;
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: Filament Pause Flag cleared");
       #endif
-    }
-    // was M600 called and the nozzle is not timed out?
-    else if((!PausedByRunout) && (PausedByFilamentChange) && (!PausedByNozzleTimeout)) {
+      break;
+    case 4:
+      // nozzle was timed out before (M600), do not enter printing state yet
+      TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
       #ifdef ANYCUBIC_TFT_DEBUG
-        SERIAL_ECHOLNPGM("DEBUG: Start M108 routine");
+        SERIAL_ECHOLNPGM("DEBUG: Set Pause again because of timeout");
       #endif
-      FilamentChangeResume(); // enter display M108 routine
-      PausedByFilamentChange=false; // clear flag
-      #ifdef ANYCUBIC_TFT_DEBUG
-        SERIAL_ECHOLNPGM("DEBUG: Filament Change Flag cleared");
-      #endif
-    }
-  #endif
-  if (PausedByNozzleTimeout) {
-    // nozzle was timed out before, do not enter printing state yet
-    TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
-    #ifdef ANYCUBIC_TFT_DEBUG
-      SERIAL_ECHOLNPGM("DEBUG: Set Pause again because of timeout");
-    #endif
 
-    // clear the timeout flag to ensure the print continues on the
-    // next push of CONTINUE
-    PausedByNozzleTimeout=false;
-    #ifdef ANYCUBIC_TFT_DEBUG
-      SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag cleared");
-    #endif
-  } else {
-    // regular resume/start or all specific resume routines are done,
-    // set printing state again
-    TFTstate=ANYCUBIC_TFT_STATE_SDPRINT;
+      // clear the timeout flag to ensure the print continues on the
+      // next push of CONTINUE
+      ai3m_pause_state = 2;
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag cleared");
+      #endif
+      break;
+    case 5:
+      // nozzle was timed out before (runout), do not enter printing state yet
+      TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: Set Pause again because of timeout");
+      #endif
+
+      // clear the timeout flag to ensure the print continues on the
+      // next push of CONTINUE
+      ai3m_pause_state = 3;
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: Nozzle timeout flag cleared");
+      #endif
+      break;
+    default:
+      break;
   }
 }
 
-void AnycubicTFTClass::PausePrint(){
+void AnycubicTFTClass::PausePrint() {
   #ifdef SDSUPPORT
-    if((!PausedByRunout)) { // is this a regular pause?
+    if(ai3m_pause_state < 2) { // is this a regular pause?
       card.pauseSDPrint(); // pause print regularly
       #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
         SERIAL_ECHOLNPGM("DEBUG: Regular Pause");
       #endif
     } else { // pause caused by filament runout
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: Filament Runout Pause");
       #endif
+      // filament runout, retract and beep
+      enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
+      enqueue_and_echo_commands_P(PSTR("G1 E-3 F1800")); // retract 3mm
+      enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
+      buzzer.tone(200, 1567);
+      buzzer.tone(200, 1174);
+      buzzer.tone(200, 1567);
+      buzzer.tone(200, 1174);
+      buzzer.tone(2000, 1567);
+      #ifdef ANYCUBIC_TFT_DEBUG
+        SERIAL_ECHOLNPGM("DEBUG: Filament runout - Retract, beep and park.");
+      #endif
       enqueue_and_echo_commands_P(PSTR("M25")); // pause print and park nozzle
+      ai3m_pause_state = 3;
       #ifdef ANYCUBIC_TFT_DEBUG
         SERIAL_ECHOLNPGM("DEBUG: M25 sent, parking nozzle");
+        SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+        SERIAL_EOL();
       #endif
       IsParked = true;
       // show filament runout prompt on screen
@@ -230,24 +276,6 @@ void AnycubicTFTClass::PausePrint(){
     }
   #endif
   TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
-  #ifdef ANYCUBIC_FILAMENT_RUNOUT_SENSOR
-    // regular pause
-    if(FilamentTestStatus) {
-      ANYCUBIC_SERIAL_PROTOCOLPGM("J05");
-      ANYCUBIC_SERIAL_ENTER();
-      #ifdef ANYCUBIC_TFT_DEBUG
-        SERIAL_ECHOLNPGM("TFT Serial Debug: SD print paused... J05");
-      #endif
-    // pause because of filament sensor
-    } else {
-      // show filament runout prompt on screen
-      ANYCUBIC_SERIAL_PROTOCOLPGM("J23");
-      ANYCUBIC_SERIAL_ENTER();
-      #ifdef ANYCUBIC_TFT_DEBUG
-        SERIAL_ECHOLNPGM("TFT Serial Debug: Filament runout while printing... J23");
-      #endif
-    }
-  #endif
 }
 
 void AnycubicTFTClass::StopPrint(){
@@ -259,12 +287,18 @@ void AnycubicTFTClass::StopPrint(){
   #endif
   print_job_timer.stop();
   thermalManager.disable_all_heaters();
-  IsParked = false;  // we are not parked yet, do it in the display state routine
+  // we are not parked yet, do it in the display state routine
+  IsParked = false;
   // turn off fan, cancel any heatups and set display state
   #if FAN_COUNT > 0
     for (uint8_t i = 0; i < FAN_COUNT; i++) fanSpeeds[i] = 0;
   #endif
   wait_for_heatup=false;
+  ai3m_pause_state = 0;
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+    SERIAL_EOL();
+  #endif
   TFTstate=ANYCUBIC_TFT_STATE_SDSTOP_REQ;
 }
 
@@ -289,7 +323,11 @@ void AnycubicTFTClass::FilamentChangeResume(){
 void AnycubicTFTClass::FilamentChangePause(){
   // set filament change flag to ensure the M108 routine
   // gets used when the user hits CONTINUE
-  PausedByFilamentChange=true;
+  ai3m_pause_state = 2;
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+    SERIAL_EOL();
+  #endif
 
   // call M600 and set display state to paused
   enqueue_and_echo_commands_P(PSTR("M600"));
@@ -313,11 +351,19 @@ void AnycubicTFTClass::ReheatNozzle(){
   #ifdef ANYCUBIC_TFT_DEBUG
     SERIAL_ECHOLNPGM("DEBUG: Clear flags");
   #endif
-  nozzle_timed_out = false;
 
   // clear waiting flags
+  nozzle_timed_out = false;
   wait_for_user = false;
   wait_for_heatup = false;
+  // lower the pause flag by two to restore initial pause condition
+  if (ai3m_pause_state > 3) {
+  ai3m_pause_state -= 2;
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOPAIR(" DEBUG: NTO done, AI3M Pause State: ", ai3m_pause_state);
+    SERIAL_EOL();
+  #endif
+  }
 
   // set pause state to show CONTINUE button again
   TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE_REQ;
@@ -339,6 +385,11 @@ void AnycubicTFTClass::ParkAfterStop(){
   }
   enqueue_and_echo_commands_P(PSTR("M84")); // disable stepper motors
   enqueue_and_echo_commands_P(PSTR("M27")); // force report of SD status
+  ai3m_pause_state = 0;
+  #ifdef ANYCUBIC_TFT_DEBUG
+    SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+    SERIAL_EOL();
+  #endif
 }
 
 float AnycubicTFTClass::CodeValue()
@@ -583,13 +634,18 @@ void AnycubicTFTClass::StateHandler()
           if (card.isFileOpen()) {
             // File is still open --> paused
             TFTstate=ANYCUBIC_TFT_STATE_SDPAUSE;
-          } else {
+          } else if ((!card.isFileOpen()) && (ai3m_pause_state == 0)) {
             // File is closed --> stopped
             TFTstate=ANYCUBIC_TFT_STATE_IDLE;
             ANYCUBIC_SERIAL_PROTOCOLPGM("J14");// J14 print done
             ANYCUBIC_SERIAL_ENTER();
             #ifdef ANYCUBIC_TFT_DEBUG
               SERIAL_ECHOLNPGM("TFT Serial Debug: SD print done... J14");
+            #endif
+            ai3m_pause_state = 0;
+            #ifdef ANYCUBIC_TFT_DEBUG
+              SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+              SERIAL_EOL();
             #endif
           }
         }
@@ -611,9 +667,13 @@ void AnycubicTFTClass::StateHandler()
       #ifdef SDSUPPORT
         if((!card.sdprinting) && (!planner.movesplanned())) {
           // We have to wait until the sd card printing has been settled
-          if((!PausedByRunout) && (!PausedByFilamentChange) && (!PausedByNozzleTimeout)) {
+          if(ai3m_pause_state < 2) {
+
             // no flags, this is a regular pause.
+            ai3m_pause_state = 1;
             #ifdef ANYCUBIC_TFT_DEBUG
+              SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+              SERIAL_EOL();
               SERIAL_ECHOLNPGM("DEBUG: Regular Pause requested");
             #endif
             if(!IsParked) {
@@ -621,19 +681,6 @@ void AnycubicTFTClass::StateHandler()
               enqueue_and_echo_commands_P(PSTR("M125 L2"));
               IsParked = true;
             }
-          } else if((PausedByRunout)) {
-            // filament runout, retract and beep
-            enqueue_and_echo_commands_P(PSTR("G91")); // relative mode
-            enqueue_and_echo_commands_P(PSTR("G1 E-3 F1800")); // retract 3mm
-            enqueue_and_echo_commands_P(PSTR("G90")); // absolute mode
-            buzzer.tone(200, 1567);
-            buzzer.tone(200, 1174);
-            buzzer.tone(200, 1567);
-            buzzer.tone(200, 1174);
-            buzzer.tone(2000, 1567);
-            #ifdef ANYCUBIC_TFT_DEBUG
-              SERIAL_ECHOLNPGM("DEBUG: Filament runout - Retract, beep and park.");
-            #endif
           }
           #ifdef ANYCUBIC_FILAMENT_RUNOUT_SENSOR
             if(FilamentTestStatus) {
@@ -658,6 +705,11 @@ void AnycubicTFTClass::StateHandler()
           TFTstate=ANYCUBIC_TFT_STATE_IDLE;
           #ifdef ANYCUBIC_TFT_DEBUG
             SERIAL_ECHOLNPGM("TFT Serial Debug: SD print stopped... J16");
+          #endif
+          ai3m_pause_state = 0;
+          #ifdef ANYCUBIC_TFT_DEBUG
+            SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+            SERIAL_EOL();
           #endif
         }
         // did we park the hotend already?
@@ -702,9 +754,10 @@ void AnycubicTFTClass::FilamentRunout()
             SERIAL_ECHOLNPGM("DEBUG: 3000ms delay done");
           #endif
           if((card.sdprinting==true)) {
-            PausedByRunout=true; // set runout pause flag
+            ai3m_pause_state = 3; // set runout pause flag
             #ifdef ANYCUBIC_TFT_DEBUG
-              SERIAL_ECHOLNPGM("DEBUG: Filament Pause Flag set");
+              SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+              SERIAL_EOL();
             #endif
             PausePrint();
           } else if((card.sdprinting==false)) {
@@ -877,6 +930,11 @@ void AnycubicTFTClass::GetCommandFromTFT()
               }
               else
               {
+                ai3m_pause_state = 0;
+                #ifdef ANYCUBIC_TFT_DEBUG
+                  SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+                  SERIAL_EOL();
+                #endif
                 StopPrint();
               }
             #endif
@@ -906,6 +964,11 @@ void AnycubicTFTClass::GetCommandFromTFT()
                 ANYCUBIC_SERIAL_PROTOCOLPGM("J16");
                 ANYCUBIC_SERIAL_ENTER();
                 TFTstate=ANYCUBIC_TFT_STATE_IDLE;
+                ai3m_pause_state = 0;
+                #ifdef ANYCUBIC_TFT_DEBUG
+                  SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+                  SERIAL_EOL();
+                #endif
               }
               #endif
             break;
@@ -949,6 +1012,11 @@ void AnycubicTFTClass::GetCommandFromTFT()
             #ifdef SDSUPPORT
               if((!planner.movesplanned()) && (TFTstate!=ANYCUBIC_TFT_STATE_SDPAUSE) && (TFTstate!=ANYCUBIC_TFT_STATE_SDOUTAGE) && (card.isFileOpen()))
               {
+                ai3m_pause_state = 0;
+                #ifdef ANYCUBIC_TFT_DEBUG
+                  SERIAL_ECHOPAIR(" DEBUG: AI3M Pause State: ", ai3m_pause_state);
+                  SERIAL_EOL();
+                #endif
                 StartPrint();
                 IsParked = false;
                 ANYCUBIC_SERIAL_PROTOCOLPGM("J04"); // J04 Starting Print

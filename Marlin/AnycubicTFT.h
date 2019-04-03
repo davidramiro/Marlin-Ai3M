@@ -56,9 +56,18 @@ public:
   void FilamentRunout();
   void KillTFT();
   char TFTstate=ANYCUBIC_TFT_STATE_IDLE;
-  bool PausedByRunout=false;
-  bool PausedByFilamentChange=false;
-  bool PausedByNozzleTimeout=false;
+
+  /**
+  * Anycubic TFT pause states:
+  *
+  * 0 - printing / stopped
+  * 1 - regular pause
+  * 2 - M600 pause
+  * 3 - filament runout pause
+  * 4 - nozzle timeout on M600
+  * 5 - nozzle timeout on filament runout
+  */
+  uint8_t ai3m_pause_state = 0;
 
 private:
   char TFTcmdbuffer[TFTBUFSIZE][TFT_MAX_CMD_SIZE];
