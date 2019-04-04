@@ -95,21 +95,39 @@
 #define TEMP_BED_PIN       14
 
 // Servos
-#ifdef NUM_SERVOS
-	#define SERVO0_PIN      11
+#if TRIGORILLA_VERSION == 0 // Default Trigorilla
+  #ifdef NUM_SERVOS
+  	#define SERVO0_PIN      11
 
-	#if NUM_SERVOS > 1
-		#define SERVO1_PIN    6
-	#endif
+  	#if NUM_SERVOS > 1
+  		#define SERVO1_PIN    6
+  	#endif
 
-	#if NUM_SERVOS > 2
-		#define SERVO2_PIN    5
-	#endif
+  	#if NUM_SERVOS > 2
+  		#define SERVO2_PIN    5
+  	#endif
 
-	#if NUM_SERVOS > 3
-		#define SERVO3_PIN    4
-	#endif
-#endif
+  	#if NUM_SERVOS > 3
+  		#define SERVO3_PIN    4
+  	#endif
+  #endif
+#else // Trigorilla 1.1
+  #ifdef NUM_SERVOS
+    #define SERVO0_PIN 5
+
+    #if NUM_SERVOS > 1
+      #define SERVO1_PIN 4
+    #endif
+
+    #if NUM_SERVOS > 2
+      #define SERVO2_PIN 11
+    #endif
+
+    #if NUM_SERVOS > 3
+      #define SERVO3_PIN 6
+    #endif
+  #endif
+#endif // #if TRIGORILLA_VERSION
 
 #if defined(ANYCUBIC_TFT_MODEL) || defined(REPRAP_DISCOUNT_SMART_CONTROLLER)
   #define BEEPER_PIN       31

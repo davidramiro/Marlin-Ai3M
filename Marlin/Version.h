@@ -41,7 +41,7 @@
    * Defines the version of the Marlin-AI3M build. Not to be confused with
    * Marlin's own build number, e.g. 1.1.9.
    */
-  #define CUSTOM_BUILD_VERSION "v1.4.5"
+  #define CUSTOM_BUILD_VERSION "v1.4.6"
 
   /**
    * Verbose version identifier which should contain a reference to the location
@@ -54,7 +54,7 @@
    * here we define this default string as the date where the latest release
    * version was tagged.
    */
-  #define STRING_DISTRIBUTION_DATE "2019-03-24"
+  #define STRING_DISTRIBUTION_DATE "2019-04-03"
 
   /**
    * Required minimum Configuration.h and Configuration_adv.h file versions.
