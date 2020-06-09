@@ -47,7 +47,7 @@
    * Verbose version identifier which should contain a reference to the location
    * from where the binary was downloaded or the source code was compiled.
    */
-  #define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION " (Github, davidramiro)"
+  #define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION " (Github, scottdyer)"
 
   /**
    * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
