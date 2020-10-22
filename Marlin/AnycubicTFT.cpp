@@ -903,7 +903,9 @@ void AnycubicTFTClass::GetCommandFromTFT()
           }
           case 8: // A8 GET  SD LIST
             #ifdef SDSUPPORT
-              SelectedDirectory[0]=0;
+              if (!SpecialMenu)
+                SelectedDirectory[0]=0;
+                
               if(!IS_SD_INSERTED())
               {
                 ANYCUBIC_SERIAL_PROTOCOLPGM("J02");
@@ -985,7 +987,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
                 } else if (TFTstrchr_pointer[4] == '<') {
                   strcpy(SelectedDirectory, TFTstrchr_pointer+4);
                 } else {
-                  SelectedDirectory[0]=0;
+                  if (!SpecialMenu)
+                    SelectedDirectory[0]=0;
 
                   if(starpos!=NULL)
                   *(starpos-1)='\0';
@@ -1211,7 +1214,8 @@ void AnycubicTFTClass::GetCommandFromTFT()
                 }
               }
 
-              SelectedDirectory[0]=0;
+              if (!SpecialMenu)
+                SelectedDirectory[0]=0;
 
               if(!IS_SD_INSERTED())
               {
