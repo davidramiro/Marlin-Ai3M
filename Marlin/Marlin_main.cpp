@@ -2079,50 +2079,240 @@ void clean_up_after_endstop_or_probe_move() {
 
   #if ENABLED(BLTOUCH)
 
-    void bltouch_command(int angle) {
-      MOVE_SERVO(Z_PROBE_SERVO_NR, angle);  // Give the BL-Touch the command and wait
-      safe_delay(BLTOUCH_DELAY);
+    typedef unsigned char BLTCommand;
+    void bltouch_init(const bool set_voltage=false);
+    bool bltouch_last_written_mode; // Initialized by settings.load, 0 = Open Drain; 1 = 5V Drain
+
+    bool bltouch_triggered() {
+      return (
+        #if ENABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+          READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING
+        #else
+          READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING
+        #endif
+      );
     }
 
-    bool set_bltouch_deployed(const bool deploy) {
-      if (deploy && TEST_BLTOUCH()) {      // If BL-Touch says it's triggered
-        bltouch_command(BLTOUCH_RESET);    //  try to reset it.
-        bltouch_command(BLTOUCH_DEPLOY);   // Also needs to deploy and stow to
-        bltouch_command(BLTOUCH_STOW);     //  clear the triggered condition.
-        safe_delay(1500);                  // Wait for internal self-test to complete.
-                                           //  (Measured completion time was 0.65 seconds
-                                           //   after reset, deploy, and stow sequence)
-        if (TEST_BLTOUCH()) {              // If it still claims to be triggered...
-          SERIAL_ERROR_START();
-          SERIAL_ERRORLNPGM(MSG_STOP_BLTOUCH);
-          stop();                          // punt!
-          return true;
+    bool bltouch_command(const BLTCommand cmd, const millis_t &ms) {
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPAIR("BLTouch Command :", cmd);
+      #endif
+      MOVE_SERVO(Z_PROBE_SERVO_NR, cmd);
+      safe_delay(MAX(ms, (uint32_t)BLTOUCH_DELAY)); // BLTOUCH_DELAY is also the *minimum* delay
+      return bltouch_triggered();
+    }
+
+    // Native BLTouch commands ("Underscore"...), used in lcd menus and internally
+    void _bltouch_reset()              { bltouch_command(BLTOUCH_RESET, BLTOUCH_RESET_DELAY); }
+
+    void _bltouch_selftest()           { bltouch_command(BLTOUCH_SELFTEST, BLTOUCH_DELAY); }
+
+    void _bltouch_set_SW_mode()        { bltouch_command(BLTOUCH_SW_MODE, BLTOUCH_DELAY); }
+
+    void _bltouch_set_5V_mode()        { bltouch_command(BLTOUCH_5V_MODE, BLTOUCH_SET5V_DELAY); }
+    void _bltouch_set_OD_mode()        { bltouch_command(BLTOUCH_OD_MODE, BLTOUCH_SETOD_DELAY); }
+    void _bltouch_mode_store()         { bltouch_command(BLTOUCH_MODE_STORE, BLTOUCH_MODE_STORE_DELAY); }
+
+    void _bltouch_deploy()             { bltouch_command(BLTOUCH_DEPLOY, BLTOUCH_DEPLOY_DELAY); }
+    void _bltouch_stow()               { bltouch_command(BLTOUCH_STOW, BLTOUCH_STOW_DELAY); }
+
+    void _bltouch_reset_SW_mode()      { if (bltouch_triggered()) _bltouch_stow(); else _bltouch_deploy(); }
+
+    bool _bltouch_deploy_query_alarm() { return bltouch_command(BLTOUCH_DEPLOY, BLTOUCH_DEPLOY_DELAY); }
+    bool _bltouch_stow_query_alarm()   { return bltouch_command(BLTOUCH_STOW, BLTOUCH_STOW_DELAY); }
+
+    void bltouch_clear() {
+      _bltouch_reset();    // RESET or RESET_SW will clear an alarm condition but...
+                  // ...it will not clear a triggered condition in SW mode when the pin is currently up
+                  // ANTClabs <-- CODE ERROR
+      _bltouch_stow();     // STOW will pull up the pin and clear any triggered condition unless it fails, don't care
+      _bltouch_deploy();   // DEPLOY to test the probe. Could fail, don't care
+      _bltouch_stow();     // STOW to be ready for meaningful work. Could fail, don't care
+    }
+
+    bool bltouch_deploy_proc() {
+      // Do a DEPLOY
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch DEPLOY requested");
+      #endif
+
+      // Attempt to DEPLOY, wait for DEPLOY_DELAY or ALARM
+      if (_bltouch_deploy_query_alarm()) {
+        // The deploy might have failed or the probe is already triggered (nozzle too low?)
+        #if ENABLED(DEBUG_LEVELING_FEATURE)
+          if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch ALARM or TRIGGER after DEPLOY, recovering");
+        #endif
+
+        bltouch_clear();                               // Get the probe into start condition
+
+        // Last attempt to DEPLOY
+        if (_bltouch_deploy_query_alarm()) {
+          // The deploy might have failed or the probe is actually triggered (nozzle too low?) again
+          #if ENABLED(DEBUG_LEVELING_FEATURE)
+            if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch Recovery Failed");
+          #endif
+
+          SERIAL_ECHOLN(MSG_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+          stop();                              // but it's not too bad, no need to kill, allow restart
+
+          return true;                         // Tell our caller we goofed in case he cares to know
         }
       }
 
-      #if ENABLED(BLTOUCH_FORCE_5V_MODE)
-        bltouch_command(BLTOUCH_5V_MODE);
-      #elif ENABLED(BLTOUCH_V3)
-        bltouch_command(BLTOUCH_OD_MODE);
+      // One of the recommended ANTClabs ways to probe, using SW MODE
+      #if ENABLED(BLTOUCH_FORCE_SW_MODE)
+      _bltouch_set_SW_mode();
       #endif
 
-      bltouch_command(deploy ? BLTOUCH_DEPLOY : BLTOUCH_STOW);
-
-      #if ENABLED(BLTOUCH_V3)
-        if (deploy) bltouch_command(BLTOUCH_SW_MODE);
+      // Now the probe is ready to issue a 10ms pulse when the pin goes up.
+      // The trigger STOW (see motion.cpp for example) will pull up the probes pin as soon as the pulse
+      // is registered.
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("bltouch.deploy_proc() end");
       #endif
+
+      return false; // report success to caller
+    }
+
+    bool bltouch_stow_proc() {
+      // Do a STOW
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch STOW requested");
+      #endif
+
+      // A STOW will clear a triggered condition in the probe (10ms pulse).
+      // At the moment that we come in here, we might (pulse) or will (SW mode) see the trigger on the pin.
+      // So even though we know a STOW will be ignored if an ALARM condition is active, we will STOW.
+      // Note: If the probe is deployed AND in an ALARM condition, this STOW will not pull up the pin
+      // and the ALARM condition will still be there. --> ANTClabs should change this behavior maybe
+
+      // Attempt to STOW, wait for STOW_DELAY or ALARM
+      if (_bltouch_stow_query_alarm()) {
+        // The stow might have failed
+        #if ENABLED(DEBUG_LEVELING_FEATURE)
+          if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch ALARM or TRIGGER after STOW, recovering");
+        #endif
+
+        _bltouch_reset();                              // This RESET will then also pull up the pin. If it doesn't
+                                              // work and the pin is still down, there will no longer be
+                                              // an ALARM condition though.
+                                              // But one more STOW will catch that
+        // Last attempt to STOW
+        if (_bltouch_stow_query_alarm()) {             // so if there is now STILL an ALARM condition:
+          #if ENABLED(DEBUG_LEVELING_FEATURE)
+            if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch Recovery Failed");
+          #endif
+
+          SERIAL_ECHOLN(MSG_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+          stop();                              // but it's not too bad, no need to kill, allow restart
+
+          return true;                         // Tell our caller we goofed in case he cares to know
+        }
+      }
 
       #if ENABLED(DEBUG_LEVELING_FEATURE)
-        if (DEBUGGING(LEVELING)) {
-          SERIAL_ECHOPAIR("set_bltouch_deployed(", deploy);
-          SERIAL_CHAR(')');
-          SERIAL_EOL();
-        }
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("bltouch.stow_proc() end");
       #endif
 
+      return false; // report success to caller
+    }
+
+    bool bltouch_status_proc() {
+      /**
+       * Return a TRUE for "YES, it is DEPLOYED"
+       * This function will ensure switch state is reset after execution
+       */
+
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch STATUS requested");
+      #endif
+
+      _bltouch_set_SW_mode();              // Incidentally, _set_SW_mode() will also RESET any active alarm
+      const bool tr = bltouch_triggered(); // If triggered in SW mode, the pin is up, it is STOWED
+
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPAIR("BLTouch is ", (int)tr);
+      #endif
+
+      if (tr) _bltouch_stow(); else _bltouch_deploy();  // Turn off SW mode, reset any trigger, honor pin state
+      return !tr;
+    }
+
+    void bltouch_mode_conv_proc(const bool M5V) {
+      /**
+       * BLTOUCH pre V3.0 and clones: No reaction at all to this sequence apart from a DEPLOY -> STOW
+       * BLTOUCH V3.0: This will set the mode (twice) and sadly, a STOW is needed at the end, because of the deploy
+       * BLTOUCH V3.1: This will set the mode and store it in the eeprom. The STOW is not needed but does not hurt
+       */
+      #if ENABLED(DEBUG_LEVELING_FEATURE)
+        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPAIR("BLTouch Set Mode - ", (int)M5V);
+      #endif
+      _bltouch_deploy();
+      if (M5V) _bltouch_set_5V_mode(); else _bltouch_set_OD_mode();
+      _bltouch_mode_store();
+      if (M5V) _bltouch_set_5V_mode(); else _bltouch_set_OD_mode();
+      _bltouch_stow();
+      bltouch_last_written_mode = M5V;
+    }
+
+    bool set_bltouch_deployed(const bool deploy) {
+      if (deploy) _bltouch_deploy(); else _bltouch_stow();
       return false;
     }
 
+    void bltouch_mode_conv_5V()        { bltouch_mode_conv_proc(true); }
+    void bltouch_mode_conv_OD()        { bltouch_mode_conv_proc(false); }
+
+    // DEPLOY and STOW are wrapped for error handling - these are used by homing and by probing
+    bool bltouch_deploy()              { return bltouch_deploy_proc(); }
+    bool bltouch_stow()                { return bltouch_stow_proc(); }
+    bool bltouch_status()              { return bltouch_status_proc(); }
+
+    // Init the class and device. Call from setup().
+    void bltouch_init(const bool set_voltage/*=false*/) {
+      // Voltage Setting (if enabled). At every Marlin initialization:
+      // BLTOUCH < V3.0 and clones: This will be ignored by the probe
+      // BLTOUCH V3.0: SET_5V_MODE or SET_OD_MODE (if enabled).
+      //               OD_MODE is the default on power on, but setting it does not hurt
+      //               This mode will stay active until manual SET_OD_MODE or power cycle
+      // BLTOUCH V3.1: SET_5V_MODE or SET_OD_MODE (if enabled).
+      //               At power on, the probe will default to the eeprom settings configured by the user
+      _bltouch_reset();
+      _bltouch_stow();
+
+      #if ENABLED(BLTOUCH_FORCE_MODE_SET)
+
+        constexpr bool should_set = true;
+
+      #else
+        #if ENABLED(DEBUG_LEVELING_FEATURE)
+          if (DEBUGGING(LEVELING)) {
+            SERIAL_ECHOLNPAIR("last_written_mode - ", int(bltouch_last_written_mode));
+            SERIAL_ECHOLNPGM("config mode - "
+              #if ENABLED(BLTOUCH_SET_5V_MODE)
+                "BLTOUCH_SET_5V_MODE"
+              #else
+                "OD"
+              #endif
+            );
+          }
+        #endif
+
+        const bool should_set = bltouch_last_written_mode != (false
+          #if ENABLED(BLTOUCH_SET_5V_MODE)
+            || true
+          #endif
+        );
+
+      #endif
+
+      if (should_set && set_voltage)
+        bltouch_mode_conv_proc((false
+          #if ENABLED(BLTOUCH_SET_5V_MODE)
+            || true
+          #endif
+        ));
+    }
   #endif // BLTOUCH
 
   /**
@@ -3525,7 +3715,8 @@ inline void gcode_G0_G1(
           const float e = clockwise ^ (r < 0) ? -1 : 1,             // clockwise -1/1, counterclockwise 1/-1
                       dx = p2 - p1, dy = q2 - q1,                   // X and Y differences
                       d = HYPOT(dx, dy),                            // Linear distance between the points
-                      h = SQRT(sq(r) - sq(d * 0.5f)),               // Distance to the arc pivot-point
+                      h2 = (r - 0.5f * d) * (r + 0.5f * d),         // factor to reduce rounding error
+                      h = (h2 >= 0) ? SQRT(h2) : 0.0f,              // Distance to the arc pivot-point
                       mx = (p1 + p2) * 0.5f, my = (q1 + q2) * 0.5f, // Point between the two points
                       sx = -dy / d, sy = dx / d,                    // Slope of the perpendicular bisector
                       cx = mx + e * h * sx, cy = my + e * h * sy;   // Pivot-point of the arc
@@ -4273,7 +4464,7 @@ inline void gcode_G28(const bool always_home_all) {
 
   #if ENABLED(BLTOUCH)
     // Make sure any BLTouch error condition is cleared
-    bltouch_command(BLTOUCH_RESET);
+    bltouch_command(BLTOUCH_RESET, BLTOUCH_RESET_DELAY);
     set_bltouch_deployed(false);
   #endif
 
@@ -5572,7 +5763,12 @@ void home_all_axes() { gcode_G28(true); }
 
           // Unapply the offset because it is going to be immediately applied
           // and cause compensation movement in Z
-          current_position[Z_AXIS] -= bilinear_z_offset(current_position);
+          #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
+            const float fade_scaling_factor = planner.fade_scaling_factor_for_z(current_position[Z_AXIS]);
+          #else
+            constexpr float fade_scaling_factor = 1.0f;
+          #endif
+          current_position[Z_AXIS] -= fade_scaling_factor * bilinear_z_offset(current_position);
 
           #if ENABLED(DEBUG_LEVELING_FEATURE)
             if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPAIR(" corrected Z:", current_position[Z_AXIS]);
@@ -8468,9 +8664,9 @@ inline void gcode_M109() {
     #endif
   }
 
-#ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.HeatingStart();
-#endif
+  #ifdef ANYCUBIC_TFT_MODEL
+    AnycubicTFT.HeatingStart();
+  #endif
 
   #if ENABLED(AUTOTEMP)
     planner.autotemp_M104_M109();
@@ -8586,7 +8782,7 @@ inline void gcode_M109() {
   }
 
   #ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.HeatingDone();
+    AnycubicTFT.HeatingDone();
   #endif
 
   #if DISABLED(BUSY_WHILE_HEATING)
@@ -8632,9 +8828,10 @@ inline void gcode_M109() {
     }
     else return;
 
-#ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.BedHeatingStart();
-#endif
+    #ifdef ANYCUBIC_TFT_MODEL
+      AnycubicTFT.BedHeatingStart();
+    #endif
+
     lcd_setstatusPGM(thermalManager.isHeatingBed() ? PSTR(MSG_BED_HEATING) : PSTR(MSG_BED_COOLING));
 
     #if TEMP_BED_RESIDENCY_TIME > 0
@@ -8708,7 +8905,7 @@ inline void gcode_M109() {
       #endif
 
       #ifdef ANYCUBIC_TFT_MODEL
-      AnycubicTFT.CommandScan();
+        AnycubicTFT.CommandScan();
       #endif
 
       #if TEMP_BED_RESIDENCY_TIME > 0
@@ -8740,7 +8937,7 @@ inline void gcode_M109() {
     } while (wait_for_heatup && TEMP_BED_CONDITIONS);
 
     #ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.BedHeatingDone();
+      AnycubicTFT.BedHeatingDone();
     #endif
 
     if (wait_for_heatup) lcd_reset_status();
@@ -8748,8 +8945,8 @@ inline void gcode_M109() {
       KEEPALIVE_STATE(IN_HANDLER);
     #endif
 
-     // flush the serial buffer after heating to prevent lockup by m105
-     //SERIAL_FLUSH();
+    // flush the serial buffer after heating to prevent lockup by m105
+    //SERIAL_FLUSH();
   }
 
 #endif // HAS_HEATED_BED
@@ -8947,7 +9144,7 @@ inline void gcode_M111() {
     #endif
 
     #ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.CommandScan();
+      AnycubicTFT.CommandScan();
     #endif
   }
 
@@ -8983,7 +9180,7 @@ inline void gcode_M81() {
   #endif
 
   #ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.CommandScan();
+    AnycubicTFT.CommandScan();
   #endif
 }
 
@@ -14874,7 +15071,7 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
   #endif
 
   #if ENABLED(ANYCUBIC_TFT_MODEL) && ENABLED(ANYCUBIC_FILAMENT_RUNOUT_SENSOR)
-  AnycubicTFT.FilamentRunout();
+    AnycubicTFT.FilamentRunout();
   #endif
 
   if (commands_in_queue < BUFSIZE) get_available_commands();
@@ -15413,7 +15610,7 @@ void setup() {
 
   #if ENABLED(BLTOUCH)
     // Make sure any BLTouch error condition is cleared
-    bltouch_command(BLTOUCH_RESET);
+    bltouch_command(BLTOUCH_RESET, BLTOUCH_RESET_DELAY);
     set_bltouch_deployed(false);
   #endif
 
@@ -15459,7 +15656,7 @@ void setup() {
     enable_D();
   #endif
 
-  #if ENABLED(SDSUPPORT) && DISABLED(ULTRA_LCD)
+  #if ENABLED(SDSUPPORT) && !(ENABLED(ULTRA_LCD) && PIN_EXISTS(SD_DETECT))
     card.beginautostart();
   #endif
 }

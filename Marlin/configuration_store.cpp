@@ -37,7 +37,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V55"
+#define EEPROM_VERSION "V56"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -75,6 +75,10 @@
 
 #if ENABLED(PID_EXTRUSION_SCALING)
   #define LPQ_LEN thermalManager.lpq_len
+#endif
+
+#if ENABLED(BLTOUCH)
+  extern bool bltouch_last_written_mode;
 #endif
 
 #pragma pack(push, 1) // No padding between variables
@@ -158,6 +162,11 @@ typedef struct SettingsDataStruct {
   //
   bool planner_leveling_active;                         // M420 S  planner.leveling_active
   int8_t ubl_storage_slot;                              // ubl.storage_slot
+
+  //
+  // BLTOUCH
+  //
+  bool bltouch_last_written_mode;
 
   //
   // DELTA / [XYZ]_DUAL_ENDSTOPS
@@ -354,7 +363,6 @@ void MarlinSettings::postprocess() {
 
 #if ENABLED(EEPROM_SETTINGS)
 
-  #define DUMMY_PID_VALUE 3000.0f
   #define EEPROM_START() int eeprom_index = EEPROM_OFFSET
   #define EEPROM_SKIP(VAR) eeprom_index += sizeof(VAR)
   #define EEPROM_WRITE(VAR) write_data(eeprom_index, (uint8_t*)&VAR, sizeof(VAR), &working_crc)
@@ -573,6 +581,20 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(storage_slot);
     #endif // AUTO_BED_LEVELING_UBL
 
+    //
+    // BLTOUCH
+    //
+    {
+      _FIELD_TEST(bltouch_last_written_mode);
+      #if ENABLED(BLTOUCH)
+        const bool &eeprom_bltouch_last_written_mode = bltouch_last_written_mode;
+      #else
+        constexpr bool eeprom_bltouch_last_written_mode = false;
+      #endif
+      EEPROM_WRITE(eeprom_bltouch_last_written_mode);
+    }
+
+
     // 11 floats for DELTA / [XYZ]_DUAL_ENDSTOPS
     #if ENABLED(DELTA)
 
@@ -657,7 +679,7 @@ void MarlinSettings::postprocess() {
         else
       #endif // !PIDTEMP
         {
-          dummy = DUMMY_PID_VALUE; // When read, will not change the existing value
+          dummy = NAN; // When read, will not change the existing value
           EEPROM_WRITE(dummy); // Kp
           dummy = 0;
           for (uint8_t q = 3; q--;) EEPROM_WRITE(dummy); // Ki, Kd, Kc
@@ -673,7 +695,7 @@ void MarlinSettings::postprocess() {
     EEPROM_WRITE(LPQ_LEN);
 
     #if DISABLED(PIDTEMPBED)
-      dummy = DUMMY_PID_VALUE;
+      dummy = NAN;
       for (uint8_t q = 3; q--;) EEPROM_WRITE(dummy);
     #else
       EEPROM_WRITE(thermalManager.bedKp);
@@ -1192,6 +1214,19 @@ void MarlinSettings::postprocess() {
       #endif // AUTO_BED_LEVELING_UBL
 
       //
+      // BLTOUCH
+      //
+      {
+        _FIELD_TEST(bltouch_last_written_mode);
+        #if ENABLED(BLTOUCH)
+          bool &eeprom_bltouch_last_written_mode = bltouch_last_written_mode;
+        #else
+          bool eeprom_bltouch_last_written_mode;
+        #endif
+        EEPROM_READ(eeprom_bltouch_last_written_mode);
+      }
+
+      //
       // DELTA Geometry or Dual Endstops offsets
       //
 
@@ -1267,7 +1302,7 @@ void MarlinSettings::postprocess() {
       #if ENABLED(PIDTEMP)
         for (uint8_t e = 0; e < MAX_EXTRUDERS; e++) {
           EEPROM_READ(dummy); // Kp
-          if (e < HOTENDS && dummy != DUMMY_PID_VALUE) {
+          if (e < HOTENDS && !isnan(dummy)) {
             // do not need to scale PID values as the values in EEPROM are already scaled
             if (!validating) PID_PARAM(Kp, e) = dummy;
             EEPROM_READ(PID_PARAM(Ki, e));
@@ -1304,7 +1339,7 @@ void MarlinSettings::postprocess() {
 
       #if ENABLED(PIDTEMPBED)
         EEPROM_READ(dummy); // bedKp
-        if (dummy != DUMMY_PID_VALUE) {
+        if (!isnan(dummy)) {
           if (!validating) thermalManager.bedKp = dummy;
           EEPROM_READ(thermalManager.bedKi);
           EEPROM_READ(thermalManager.bedKd);
