@@ -1006,7 +1006,7 @@ void lcd_quick_feedback(const bool clear_buttons) {
       END_MENU();
     }
 
-  #endif
+  #endif // BLTOUCH
 
   #if ENABLED(LCD_PROGRESS_BAR_TEST)
 
