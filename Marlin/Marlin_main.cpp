@@ -8664,9 +8664,9 @@ inline void gcode_M109() {
     #endif
   }
 
-#ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.HeatingStart();
-#endif
+  #ifdef ANYCUBIC_TFT_MODEL
+    AnycubicTFT.HeatingStart();
+  #endif
 
   #if ENABLED(AUTOTEMP)
     planner.autotemp_M104_M109();
@@ -8782,7 +8782,7 @@ inline void gcode_M109() {
   }
 
   #ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.HeatingDone();
+    AnycubicTFT.HeatingDone();
   #endif
 
   #if DISABLED(BUSY_WHILE_HEATING)
@@ -8828,9 +8828,10 @@ inline void gcode_M109() {
     }
     else return;
 
-#ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.BedHeatingStart();
-#endif
+    #ifdef ANYCUBIC_TFT_MODEL
+      AnycubicTFT.BedHeatingStart();
+    #endif
+
     lcd_setstatusPGM(thermalManager.isHeatingBed() ? PSTR(MSG_BED_HEATING) : PSTR(MSG_BED_COOLING));
 
     #if TEMP_BED_RESIDENCY_TIME > 0
@@ -8904,7 +8905,7 @@ inline void gcode_M109() {
       #endif
 
       #ifdef ANYCUBIC_TFT_MODEL
-      AnycubicTFT.CommandScan();
+        AnycubicTFT.CommandScan();
       #endif
 
       #if TEMP_BED_RESIDENCY_TIME > 0
@@ -8936,7 +8937,7 @@ inline void gcode_M109() {
     } while (wait_for_heatup && TEMP_BED_CONDITIONS);
 
     #ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.BedHeatingDone();
+      AnycubicTFT.BedHeatingDone();
     #endif
 
     if (wait_for_heatup) lcd_reset_status();
@@ -8944,8 +8945,8 @@ inline void gcode_M109() {
       KEEPALIVE_STATE(IN_HANDLER);
     #endif
 
-     // flush the serial buffer after heating to prevent lockup by m105
-     //SERIAL_FLUSH();
+    // flush the serial buffer after heating to prevent lockup by m105
+    //SERIAL_FLUSH();
   }
 
 #endif // HAS_HEATED_BED
@@ -9143,7 +9144,7 @@ inline void gcode_M111() {
     #endif
 
     #ifdef ANYCUBIC_TFT_MODEL
-    AnycubicTFT.CommandScan();
+      AnycubicTFT.CommandScan();
     #endif
   }
 
@@ -9179,7 +9180,7 @@ inline void gcode_M81() {
   #endif
 
   #ifdef ANYCUBIC_TFT_MODEL
-  AnycubicTFT.CommandScan();
+    AnycubicTFT.CommandScan();
   #endif
 }
 
@@ -15070,7 +15071,7 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
   #endif
 
   #if ENABLED(ANYCUBIC_TFT_MODEL) && ENABLED(ANYCUBIC_FILAMENT_RUNOUT_SENSOR)
-  AnycubicTFT.FilamentRunout();
+    AnycubicTFT.FilamentRunout();
   #endif
 
   if (commands_in_queue < BUFSIZE) get_available_commands();
