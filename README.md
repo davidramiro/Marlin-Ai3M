@@ -1,3 +1,4 @@
+
 # Anycubic i3 Mega / Mega-S Marlin 1.1.9 by davidramiro
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6B6SAL5XRH842&source=url) [![Downloads](https://img.shields.io/github/downloads/davidramiro/Marlin-AI3M/total.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases) [![Open Issues](https://img.shields.io/github/issues-raw/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/issues?q=is%3Aopen+is%3Aissue) [![License](https://img.shields.io/github/license/davidramiro/Marlin-AI3M.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/blob/master/LICENSE) [![Latest Release](https://img.shields.io/github/release/davidramiro/Marlin-AI3m.svg?style=flat)](https://github.com/davidramiro/Marlin-AI3M/releases/latest/) [![Last commit](https://img.shields.io/github/last-commit/davidramiro/Marlin-AI3m.svg?style=flat)](https://github.com/davidramiro/Marlin-Ai3M/commits/)  [![Travis CI](https://api.travis-ci.org/davidramiro/Marlin-Ai3M.svg?branch=master)](https://travis-ci.org/davidramiro/Marlin-Ai3M)  
@@ -37,6 +38,13 @@ While the i3 Mega is a great printer for its price and produces fantastic result
 - Estimated print times from your slicer might be slightly off.
 - Special characters on any file or folders name on the SD card will cause the file menu to freeze. Simply replace or remove every special character (Chinese, Arabic, Russian, accents, German & Scandinavian umlauts, ...) from the name. Symbols like dashes or underscores are no problem.
 **Important note: On the SD card that comes with the printer there is a folder with Chinese characters in it by default. Please rename or remove it.**
+
+
+![Compatibility Info][compatibility]
+
+#### Updated compatibility info:  Since late 2020, Anycubic started shipping their printers with a new display. It has a blue background and yellow text. With this display, the special SD menu will not work. Features like Manual Mesh Leveling and PID Tuning need to be configured via USB (e.g. OctoPrint or Cura as host). The printing features itself remain functional.
+
+[compatibility]: https://kore.cc/i3mega/img/compatibility.png "Compatibility Info"
 
 ## How to flash this?
 
