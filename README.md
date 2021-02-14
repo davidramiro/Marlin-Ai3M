@@ -74,16 +74,16 @@ I provided three different precompiled hex files: One for no modifications on th
 
 - Flash the hex with Cura, OctoPrint or similar
 - Use a tool with a terminal (OctoPrint, Pronterface, Repetier Host, ...) to send commands to your printer.
-- **Important** Connect to the printer and send the following commands:
-- `M502` - load hard coded default values
-- `M500` - save them to EEPROM
+- ⚠️ **Important** Connect to the printer and send the following commands:
+  - `M502` - load hard coded default values
+  - `M500` - save them to EEPROM
 
 **If you are using this on a Mega-S, those four additional commands are necessary:**
 - `M92 E384` - set correct steps for the new extruder
 - `M203 E30` - limit extruder feedrate
 - `M204 R1500.00` - lower retract acceleration
 - `M500` - save the values
-- I highly recommend calibrating the extruder.
+- It is highly recommend that you calibrate the extruder.
 
 #### Calibration and other instructions have been moved to the [Wiki](https://github.com/davidramiro/Marlin-AI3M/wiki/Calibration).
 
