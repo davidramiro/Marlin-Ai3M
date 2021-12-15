@@ -7643,12 +7643,20 @@ inline void gcode_M17() {
    * M23: Open a file
    */
   inline void gcode_M23() {
+    byte filenameSlash = 0;
     #if ENABLED(POWER_LOSS_RECOVERY)
       card.removeJobRecoveryFile();
     #endif
     // Simplify3D includes the size, so zero out all spaces (#7227)
-    for (char *fn = parser.string_arg; *fn; ++fn) if (*fn == ' ') *fn = '\0';
-    card.openFile(parser.string_arg, true);
+    for (char *fn = parser.string_arg; *fn; ++fn){
+      if (*fn == ' ') *fn = '\0';
+      if (*fn == '/') filenameSlash += 1;
+    }
+    if (filenameSlash > 1){
+      card.openFile(&parser.string_arg[1], true);
+    } else {
+      card.openFile(parser.string_arg, true);      
+    }
   }
 
   /**
